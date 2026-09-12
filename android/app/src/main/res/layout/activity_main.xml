@@ -12,7 +12,10 @@
         android:paddingBottom="28dp">
 
         <!-- ============ banner ============ -->
-        <LinearLayout style="@style/Header" android:orientation="vertical">
+        <LinearLayout style="@style/Header" android:orientation="vertical"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginStart="12dp" android:layout_marginEnd="12dp"
+            android:layout_marginBottom="12dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -84,9 +87,10 @@
 
         <!-- ============ mode ============ -->
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/Card" android:orientation="vertical">
+            style="@style/Card" android:orientation="vertical"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginStart="12dp" android:layout_marginEnd="12dp"
+            android:layout_marginBottom="12dp">
             <TextView style="@style/SectionTitle" android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:text="@string/section_mode" />
             <RadioGroup
@@ -119,9 +123,10 @@
 
         <!-- ============ strictness ============ -->
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/Card" android:orientation="vertical">
+            style="@style/Card" android:orientation="vertical"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginStart="12dp" android:layout_marginEnd="12dp"
+            android:layout_marginBottom="12dp">
             <TextView style="@style/SectionTitle" android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:text="@string/section_strictness" />
             <TextView
@@ -148,9 +153,10 @@
 
         <!-- ============ action ============ -->
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/Card" android:orientation="vertical">
+            style="@style/Card" android:orientation="vertical"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginStart="12dp" android:layout_marginEnd="12dp"
+            android:layout_marginBottom="12dp">
             <TextView style="@style/SectionTitle" android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:text="@string/section_action" />
             <Switch
@@ -177,9 +183,10 @@
 
         <!-- ============ channels ============ -->
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/Card" android:orientation="vertical">
+            style="@style/Card" android:orientation="vertical"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginStart="12dp" android:layout_marginEnd="12dp"
+            android:layout_marginBottom="12dp">
             <TextView style="@style/SectionTitle" android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:text="@string/section_channels" />
             <Switch
@@ -224,9 +231,10 @@
 
         <!-- ============ stats ============ -->
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/Card" android:orientation="vertical">
+            style="@style/Card" android:orientation="vertical"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginStart="12dp" android:layout_marginEnd="12dp"
+            android:layout_marginBottom="12dp">
             <TextView style="@style/SectionTitle" android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:text="@string/section_stats" />
             <TextView
@@ -246,9 +254,10 @@
 
         <!-- ============ tools ============ -->
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/Card" android:orientation="vertical">
+            style="@style/Card" android:orientation="vertical"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginStart="12dp" android:layout_marginEnd="12dp"
+            android:layout_marginBottom="12dp">
             <Switch
                 android:id="@+id/switchDebug"
                 android:layout_width="match_parent"
@@ -273,9 +282,10 @@
 
         <!-- ============ about ============ -->
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/Card" android:orientation="vertical">
+            style="@style/Card" android:orientation="vertical"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginStart="12dp" android:layout_marginEnd="12dp"
+            android:layout_marginBottom="12dp">
             <TextView style="@style/SectionTitle" android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:text="@string/section_about" />
             <TextView
