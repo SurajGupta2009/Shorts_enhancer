@@ -62,6 +62,16 @@ class ShortsWatcherService : AccessibilityService() {
 
         /** How long a confirmation stays on the block screen before it acts. */
         private const val CONFIRM_MS = 1100L
+
+        /**
+         * How long one Short stays "already counted" for the log and the today counters.
+         *
+         * YouTube repaints the feed several times a second, so one Short was logged (and
+         * counted as let through) twenty times in two minutes: "let through=138" in a real
+         * export was maybe twenty actual Shorts. Decisions are still taken every time; they
+         * are just not re-recorded for the same Short.
+         */
+        private const val SAME_SHORT_LOG_MS = 300_000L
     }
 
     private lateinit var settings: Settings
@@ -80,6 +90,9 @@ class ShortsWatcherService : AccessibilityService() {
 
     /** Reads in a row that found no Shorts content. One is not evidence - see BlockPolicy. */
     private var lostReads = 0
+
+    /** key -> when it was last written to the decision log, so a repaint is not a new Short. */
+    private val lastLogged = HashMap<String, Long>()
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -230,17 +243,32 @@ class ShortsWatcherService : AccessibilityService() {
             "margin=${"%.1f".format(verdict.margin)} theta=${"%.1f".format(verdict.threshold)} " +
             "p=${"%.2f".format(verdict.confidence)}"
 
+        if (surface.sponsored) {
+            // A promoted Short's text is an advert, not a title: judging it said nothing
+            // about the feed and filled the log with marketing copy. It is also not
+            // something a swipe-filter can reliably skip, so it is counted as neither.
+            if (settings.debugLogging) DebugLog.add("ad", "promoted Short — not judged :: ${surface.trace}")
+            return
+        }
+
         if (verdict.keep) {
             // A screen the app could not read must not tear down a block screen that is
             // standing: the same Short would be blocked again a moment later, which looks
             // like flicker. Only a Short that was read and judged keepable clears it.
             val sameShort = policy.keyOf(surface.title, surface.channel) == showingKey
             if (!verdict.unknown && !(sameShort && overlay?.isShowing() == true)) dismissOverlay()
-            if (!verdict.unknown) settings.countAllowed()
-            DecisionLog.add(
-                if (verdict.unknown) DecisionLog.Kind.UNKNOWN else DecisionLog.Kind.KEEP,
-                surface.title, surface.channel, verdict.margin, verdict.threshold
-            )
+            val key = policy.keyOf(surface.title, surface.channel)
+            val nowMs = System.currentTimeMillis()
+            pruneLogged(nowMs)
+            val alreadyLogged = (lastLogged[key] ?: 0L) > nowMs - SAME_SHORT_LOG_MS
+            if (!alreadyLogged) {
+                lastLogged[key] = nowMs
+                if (!verdict.unknown) settings.countAllowed()
+                DecisionLog.add(
+                    if (verdict.unknown) DecisionLog.Kind.UNKNOWN else DecisionLog.Kind.KEEP,
+                    surface.title, surface.channel, verdict.margin, verdict.threshold
+                )
+            }
             if (settings.debugLogging) {
                 DebugLog.add(if (verdict.unknown) "unknown" else "keep", "$where :: ${verdict.reason}")
             }
@@ -405,6 +433,11 @@ class ShortsWatcherService : AccessibilityService() {
     fun dismissOverlay() {
         overlay?.dismiss()
         showingKey = ""
+    }
+
+    private fun pruneLogged(now: Long) {
+        if (lastLogged.size < 200) return
+        lastLogged.entries.removeAll { now - it.value > SAME_SHORT_LOG_MS }
     }
 
     /** Used by the debug screen to prove the identity rules on a real device. */

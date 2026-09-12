@@ -9,52 +9,52 @@
   "features": 20000,
   "scale": 4096,
   "thresholds": {
-    "info_margin": -3.018,
-    "study_margin": -14.977,
+    "info_margin": -2.12,
+    "study_margin": 1.25,
     "temperature": 5.9,
     "presets": {
       "informative": [
         {
-          "budget": 0.01,
-          "margin": -3.881
+          "offset": -2.0,
+          "margin": -10.12
         },
         {
-          "budget": 0.02,
-          "margin": -3.783
+          "offset": -1.0,
+          "margin": -6.12
         },
         {
-          "budget": 0.05,
-          "margin": -1.22
+          "offset": 0.0,
+          "margin": -2.12
         },
         {
-          "budget": 0.1,
-          "margin": 5.995
+          "offset": 1.0,
+          "margin": 1.88
         },
         {
-          "budget": 0.2,
-          "margin": 12.851
+          "offset": 2.0,
+          "margin": 5.88
         }
       ],
       "study": [
         {
-          "budget": 0.01,
-          "margin": -16.423
+          "offset": -2.0,
+          "margin": -6.75
         },
         {
-          "budget": 0.02,
-          "margin": -16.414
+          "offset": -1.0,
+          "margin": -2.75
         },
         {
-          "budget": 0.05,
-          "margin": -11.657
+          "offset": 0.0,
+          "margin": 1.25
         },
         {
-          "budget": 0.1,
-          "margin": -3.174
+          "offset": 1.0,
+          "margin": 5.25
         },
         {
-          "budget": 0.2,
-          "margin": 3.785
+          "offset": 2.0,
+          "margin": 9.25
         }
       ]
     }
@@ -62,25 +62,25 @@
   "metrics": {
     "synthetic_unseen_topics": {
       "info_mode": {
-        "theta": -3.0177836469194563,
-        "useful_blocked": 0.0097,
-        "junk_kept": 0.0261
+        "theta": -2.12,
+        "useful_blocked": 0.0044,
+        "junk_kept": 0.0399
       },
       "study_mode": {
-        "theta": -14.977495397981604,
-        "useful_blocked": 0.2033,
-        "junk_kept": 0.1163
+        "theta": 1.25,
+        "useful_blocked": 0.2376,
+        "junk_kept": 0.0831
       }
     },
     "hard_cases": {
-      "n": 185,
-      "accuracy": 0.9838,
-      "useful_blocked": 0.0169,
-      "junk_kept": 0.0149
+      "n": 206,
+      "accuracy": 0.9951,
+      "useful_blocked": 0.0,
+      "junk_kept": 0.0127
     },
-    "max_quantisation_error": 0.0
+    "max_quantisation_error": 2.7e-05
   },
   "trained_at": "2026-09-12",
-  "train_docs": 45855,
+  "train_docs": 51271,
   "seed": 20260912
 }

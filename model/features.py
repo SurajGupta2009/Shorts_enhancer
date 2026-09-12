@@ -82,6 +82,19 @@ _INFO_PHRASES = tuple(sorted(kw.INFO_PHRASES))
 _ENT_PHRASES = tuple(sorted(kw.ENT_PHRASES))
 
 
+# Function words carry no topic signal, and leaving them in let the model learn weights for
+# "the" and "of" as stand-ins for title length: a real Short reading "roast of the year" was
+# kept because "the" scored +4.0 as informative. Bigrams and phrases still see them, so they
+# still count where they mean something in context.
+_STOPWORDS = {
+    "a", "an", "the", "of", "to", "in", "on", "for", "and", "or", "is", "are", "was",
+    "be", "it", "its", "this", "that", "these", "those", "with", "as", "at", "by",
+    "from", "you", "your", "i", "my", "me", "we", "he", "she", "they", "him", "her",
+    "them", "his", "do", "does", "did", "so", "if", "but", "not", "no", "yes", "will",
+    "can", "just", "up", "out", "all", "how", "what", "why", "when", "who",
+}
+
+
 def _tokens(normalized: str):
     return normalized.split()
 
@@ -96,6 +109,8 @@ def features(title: str, channel: str = None):
     feat = set()
 
     for w in ttok + ctok:
+        if w in _STOPWORDS:
+            continue
         if len(w) >= 2:
             feat.add("w:" + w)
             s = stem(w)
@@ -122,10 +137,9 @@ def features(title: str, channel: str = None):
             if len(w) >= n:
                 for i in range(len(w) - n + 1):
                     feat.add("c%d:%s" % (n, w[i:i + n]))
-        if len(w) >= 2:
-            feat.add("p2:" + w[:2])
-        if len(w) > 3:
-            feat.add("s3:" + w[-3:])
+        # p2/s3 were dropped after an ablation: keeping only the 3/4-char substrings scored
+        # better on the hand-written cases (99% vs 98.5%) and removed the fragments that made
+        # "action" read as junk (learned from "reaction video") and "trick" as clickbait
 
     padded = " " + tnorm + " " if tnorm else ""
     if padded:

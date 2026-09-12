@@ -135,11 +135,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textStyle="bold" />
-            <SeekBar
-                android:id="@+id/strictness"
+            <!-- Five named buttons, not a slider: a slider can be nudged by a scroll and
+                 then the setting no longer matches what the user thinks they chose. -->
+            <LinearLayout
+                android:id="@+id/presetBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:max="4"
+                android:orientation="vertical"
                 android:paddingTop="6dp" />
             <TextView
                 android:id="@+id/strictnessExplain"

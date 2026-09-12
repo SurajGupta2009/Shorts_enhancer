@@ -39,7 +39,7 @@ The three sums become one number, the **margin**:
 ```
 margin = log-odds that this is study-or-info rather than entertainment
 
-keep   if margin >= threshold      (Balanced ships with threshold = -1.0)
+keep   if margin >= threshold      (Balanced ships with threshold = -2.12)
 block  otherwise
 ```
 
@@ -48,18 +48,21 @@ useful weights by more than the threshold allows. Nothing is ever decided by a s
 word: it is a sum over everything the app can see, and a title usually pulls in both
 directions.
 
-Worked examples, computed from the model that ships (Balanced, threshold −1.0):
+Worked examples, computed from the model that ships (Balanced, threshold −2.12):
 
 | Short | margin | verdict | what moved it |
 |---|---|---|---|
-| `can you solve this mole concept question?` — Chemistry Adda | **+58.0** | keep | `w:concept`, `st:concept`, `ph:i:how_to`, channel `adds`-style study words |
-| `Newton's laws in 60 seconds #physics #jee` — Physics Wallah | **+24.8** | keep | `ph:i:#physics`, `w:physics`, `ch:i:physics_wallah` |
-| `Boom Shaka · KR$NA & Dhanda Nyoliwala` — Trap Nation | **−2.1** | block | `p2:bo`, `c3:boo`, `w:trap`, `w:nation` — a slowed song upload, and the channel is a music channel |
-| `Amazon Music Unlimited - 3 months free. Auto-renews at ₹119/month` — Deals India Daily | **−72.5** | block | `ph:e:auto_renews`, `ph:e:3_months_free`, `w:unlimited` |
+| `can you solve this mole concept question?` — Chemistry Adda | **+49.1** | keep | `w:concept`, `st:concept`, `ph:i:how_to`, study words in the channel name |
+| `Newton's laws in 60 seconds #physics #jee` — Physics Wallah | **+26.3** | keep | `ph:i:#physics`, `w:physics`, `ch:i:physics_wallah` |
+| `Boom Shaka · KR$NA & Dhanda Nyoliwala` — Trap Nation | **−9.5** | block | `c3:boo`, `w:trap`, `w:nation` — a slowed song upload, and the channel is a music channel |
+| `Amazon Music Unlimited - 3 months free. Auto-renews at ₹119/month` — Deals India Daily | **−53.7** | block | `ph:e:auto_renews`, `ph:e:auto_renews`, `w:unlimited`, `w:renews` |
 
-The last two are the interesting ones: the first is *just* over the line at −2.1, i.e. the
-app got it by a hair, which is exactly what a threshold means. There is no hidden rule
-list — just this sum, this threshold, and the exceptions below.
+There is no hidden rule list — just this sum, this threshold, and the exceptions below.
+Two things changed the ranking outright, both found in a real device export: `the`/`of`/`to`
+used to carry weights of their own (a roast Short was kept because "the" scored +4), and
+two-letter fragments learned from other words ("action" inheriting junk from "reaction
+video"). Function words no longer have their own weights and the fragments are gone, which
+took the hand-written set from 98.5% to 99.5% and the useful-block rate to zero.
 
 ## 4. The exceptions, in priority order
 
@@ -78,16 +81,20 @@ list — just this sum, this threshold, and the exceptions below.
 
 ## 5. What the strictness setting changes
 
-Only the number in step 3. Nothing else. Measured on the 197 hand-written borderline
-titles that ship with the model:
+Only the number in step 3. Nothing else. Measured on the 206 hand-written borderline
+titles and real device cases that ship with the model:
 
 | rung | threshold | useful Shorts blocked | junk let through |
 |---|---|---|---|
-| Fewest interruptions | −9.0 | 0.0 % | 5.3 % |
-| – | −5.0 | 0.0 % | 5.3 % |
-| **Balanced** (default) | **−1.0** | **0.8 %** | **2.7 %** |
-| Strict | +3.0 | 1.6 % | 2.7 % |
-| Maximum filtering | +7.0 | 5.7 % | 2.7 % |
+| Fewest interruptions | −10.1 | 0.0 % | 11.4 % |
+| Gentle | −6.1 | 0.0 % | 7.6 % |
+| **Balanced** (default) | **−2.1** | **0.0 %** | **1.3 %** |
+| Strict | +1.9 | 4.7 % | 0.0 % |
+| Maximum filtering | +5.9 | 6.3 % | 0.0 % |
+
+If you are on **Strict**, expect about 5% of worth-keeping Shorts to be covered — that is the
+setting doing what it says, not a bug. The app now shows this table's numbers next to each
+rung, and a named button per rung instead of a slider.
 
 *Study only* mode is a different number for a different question (is this academic
 material?), and it separates much worse — study material is a subset of informative
@@ -97,6 +104,10 @@ talk. That is why the README recommends informative mode.
 ## 6. Where it is honestly weak
 
 * **Titles are short.** "Intro" or "Part 2" carry no signal; the app leans on the channel.
+* **Comments and sheets are read by container, not by text.** A comment reads exactly like a
+  title ("they dont even specialize in running so you gotta compare him to a track runner"),
+  so the app refuses to look at anything under `comment_thread`, `bottom_sheet` or an ad unit.
+  It was a real bug that it did.
 * **Hinglish and transliterated titles** use words the corpus has less of.
 * **Letter fragments are blunt.** `c3:` and `p2:` features let the model generalise past
   words it has never seen, at the cost of occasionally reacting to a fragment. I tested

@@ -42,6 +42,12 @@ object ShortsText {
         "menu", "sound", "original sound", "likes and views", "view all", "see more",
         "learn more", "watch full video", "open in app", "join", "members only",
         "live", "premiere", "shorts remixing this video", "related shorts",
+        // from a real device log: YouTube paints these into the same node as the title, and
+        // a Short whose title was only one of them got judged on it (a Physics Wallah
+        // toppers Short was blocked because its title read as "New content available")
+        "new content available", "content available", "pull down to lock 2x speed",
+        "pull down to lock 2x", "sort comments", "add a comment", "my ad centre",
+        "ad centre", "opens in new tab", "opens a new tab",
     )
 
     /** Substrings that mark a blob as UI rather than content. */
@@ -65,7 +71,106 @@ object ShortsText {
         "open the youtube app",
         "installed app",
         "accessibility",
+        "sort comments",
+        "add a comment",
+        "comments.",
+        "more replies",
+        "report submitted",
+        "we will use this information",
+        "you shouldn't see this ad",
+        "you shouldn\u2019t see this ad",
+        "ranked by factors like",
+        "as detailed and accurate as possible",
+        "opens in new tab",
+        "opens a new tab",
+        "my ad centre",
+        "ad centre",
+        "download hd videos",
+        "smooth playback directly from your device",
+        "explore the possibilities",
+        "curious about changes ahead",
+        "streamline your workflow",
+        "fast answers with google",
+        "giving away",
+        "gamified learning platform",
+        "video chat rooms",
+        "1v1 video chat",
+        "verified girls",
+        "hair generator",
+        "ideal hairstyle",
+        "iptv player",
+        "m3u playlists",
+        "free with ads",
+        "watch ads to",
     )
+
+    /**
+     * Badges YouTube glues into the same node as the title.
+     *
+     * "Speed Almost Beat TWO Olympic Runners 🥶🔥 New content available" is one node: the
+     * title plus a notification badge. Rejecting the whole node would lose the title, and
+     * keeping it means the model reads the badge as part of the title - so the badge is cut
+     * off, and the title is kept.
+     */
+    private val GLUED_UI = listOf(
+        "new content available",
+        "pull down to lock 2x speed",
+        "pull down to lock 2x",
+        "pull down to unlock",
+        "content available",
+    )
+
+    /**
+     * Cuts the badge off whichever end it is glued to.
+     *
+     * Anchored on purpose: a badge always sits at the start ("New content available Beauty
+     * of binomial") or the end ("… New content available"), so a plain replace would also
+     * rewrite a title that merely mentions the words. Leftovers too short to judge are then
+     * kept by the classifier's own "fewer than two words" rule.
+     */
+    fun stripGluedUi(raw: String): String {
+        var t = raw.trim()
+        var changed = true
+        while (changed && t.isNotEmpty()) {
+            changed = false
+            val low = t.lowercase(Locale.US)
+            for (ui in GLUED_UI) {
+                if (low.startsWith(ui)) {
+                    t = t.substring(ui.length)
+                    changed = true
+                    break
+                }
+                if (low.endsWith(ui)) {
+                    t = t.substring(0, t.length - ui.length)
+                    changed = true
+                    break
+                }
+            }
+            t = t.replace(WHITESPACE, " ").trim().trim(',', '|', '·', '•', '-', '—').trim()
+        }
+        return t
+    }
+
+    /**
+     * View IDs whose subtrees never contain the video's own title.
+     *
+     * Comments ("they dont even specialize in running so you gotta compare him to a track
+     * runner"), the report sheet ("It violates a specific law or my legal rights") and ad
+     * units all rendered text that scored well as titles, so the app judged the Short behind
+     * a comment and kept a feedback form. The title lives in the player overlay, so anything
+     * under these containers is dropped before it is scored.
+     */
+    private val NON_CONTENT_IDS = listOf(
+        "comment", "reply", "engagement", "bottom_sheet", "sheet_container",
+        "ad_badge", "ad_attribution", "sponsored", "promo_", "shopping_",
+    )
+
+    /** True for a view ID (and so a subtree) that holds comments, sheets or ad units. */
+    fun isNonContentId(rawId: String?): Boolean {
+        val id = rawId?.substringAfterLast('/')?.lowercase() ?: return false
+        if (id.isEmpty()) return false
+        return NON_CONTENT_IDS.any { id.contains(it) }
+    }
 
     /** "…  Go to channel @handle" — the channel row merged into whatever precedes it. */
     private val GO_TO_CHANNEL = Regex(
@@ -142,8 +247,10 @@ object ShortsText {
     fun classify(raw: String): List<Piece> {
         val out = ArrayList<Piece>(6)
         for (chunk in split(raw)) {
-            val t = chunk.trim()
+            val t = stripGluedUi(chunk.trim())
             if (t.length < 3) continue
+            // a node that was nothing but badges is UI, not a Short title
+            if (isChrome(t)) continue
 
             val merged = GO_TO_CHANNEL.find(t)
             if (merged != null) {

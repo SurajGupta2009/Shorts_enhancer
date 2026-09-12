@@ -243,6 +243,25 @@ HARD_CASES = [
          channel="Offer Zone", informative=0, study=0, note="advert"),
     dict(title="sponsored: buy now, price drop on the new smartwatch",
          channel="Shop Smart", informative=0, study=0, note="advert"),
+    # ---- from a real device export (2026-09-12): the user overruled these, or they leaked
+    dict(title="Day 111/365 #selfimprovement #motivation  #dailyreminder#winterarc  #growthmindset  #dailyinspiration",
+         channel="Lets__Improve2026", informative=1, study=0, note="on-device: user kept a self-improvement series"),
+    dict(title="What a brilliant endgame \U0001F62E\U0001F525 brilliant Chess \u265F\uFE0F",
+         channel="OnlineChess3109", informative=1, study=0, note="on-device: user kept chess thinking"),
+    dict(title="Say goodbye to bots. Meet 100% verified girls in private 1v1 video chat rooms.",
+         channel="Sponsored", informative=0, study=0, note="on-device: adult advert, was kept at Balanced"),
+    dict(title="Stream your M3U playlists &amp; live TV easily with a fast IPTV player",
+         channel="", informative=0, study=0, note="on-device: advert"),
+    dict(title="AI-powered tool to explore your ideal hairstyle. HairGenie - AI Hair Generator",
+         channel="", informative=0, study=0, note="on-device: advert"),
+    dict(title="JEE Mains Monster PYQ solved in seconds\U0001F525Don't use LENGTHY Method for this | Must for JEE Mains 2026",
+         channel="Mathius1729", informative=1, study=1, note="on-device: JEE problem solving"),
+    dict(title="Why the U.S. Put Pigeons Inside Missiles #history #ww2 Imagine getting bodied by a pigeon guided missile",
+         channel="IronVeil-m6i", informative=1, study=0, note="on-device: history explainer"),
+    dict(title="How Engineers Measured Machines Before Electronic Sensors \U0001F92F#Engineering #Technology #Science",
+         channel="peaknesttus", informative=1, study=0, note="on-device: engineering explainer"),
+    dict(title="Hotel Management Wala Dost \U0001F979\U0001F9FC #hotelmanagement #hotel #shorts",
+         channel="Zamaanaa", informative=0, study=0, note="on-device: comedy sketch"),
 ]
 
 

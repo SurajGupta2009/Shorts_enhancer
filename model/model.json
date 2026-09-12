@@ -9,52 +9,52 @@
   "features": 20000,
   "scale": 4096,
   "thresholds": {
-    "info_margin": -1.0,
-    "study_margin": 0.62,
+    "info_margin": -2.12,
+    "study_margin": 1.25,
     "temperature": 5.9,
     "presets": {
       "informative": [
         {
           "offset": -2.0,
-          "margin": -9.0
+          "margin": -10.12
         },
         {
           "offset": -1.0,
-          "margin": -5.0
+          "margin": -6.12
         },
         {
           "offset": 0.0,
-          "margin": -1.0
+          "margin": -2.12
         },
         {
           "offset": 1.0,
-          "margin": 3.0
+          "margin": 1.88
         },
         {
           "offset": 2.0,
-          "margin": 7.0
+          "margin": 5.88
         }
       ],
       "study": [
         {
           "offset": -2.0,
-          "margin": -7.38
+          "margin": -6.75
         },
         {
           "offset": -1.0,
-          "margin": -3.38
+          "margin": -2.75
         },
         {
           "offset": 0.0,
-          "margin": 0.62
+          "margin": 1.25
         },
         {
           "offset": 1.0,
-          "margin": 4.62
+          "margin": 5.25
         },
         {
           "offset": 2.0,
-          "margin": 8.62
+          "margin": 9.25
         }
       ]
     }
@@ -62,25 +62,25 @@
   "metrics": {
     "synthetic_unseen_topics": {
       "info_mode": {
-        "theta": -1.0,
-        "useful_blocked": 0.0058,
-        "junk_kept": 0.0292
+        "theta": -2.12,
+        "useful_blocked": 0.0044,
+        "junk_kept": 0.0399
       },
       "study_mode": {
-        "theta": 0.62,
-        "useful_blocked": 0.1716,
-        "junk_kept": 0.0967
+        "theta": 1.25,
+        "useful_blocked": 0.2376,
+        "junk_kept": 0.0831
       }
     },
     "hard_cases": {
-      "n": 197,
-      "accuracy": 0.9848,
-      "useful_blocked": 0.0082,
-      "junk_kept": 0.0267
+      "n": 206,
+      "accuracy": 0.9951,
+      "useful_blocked": 0.0,
+      "junk_kept": 0.0127
     },
-    "max_quantisation_error": 0.0
+    "max_quantisation_error": 2.7e-05
   },
   "trained_at": "2026-09-12",
-  "train_docs": 49454,
+  "train_docs": 51271,
   "seed": 20260912
 }

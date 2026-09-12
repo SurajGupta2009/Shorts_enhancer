@@ -120,6 +120,9 @@ INFO_KEYWORDS = [
     "diy", "build", "craft", "maker",
     "handmade", "homemade", "circuit", "soldering",
     "voiceover", "narrator", "handwritten", "doubts",
+    "grandmaster", "endgame", "newsflash",
+    "dailyinspiration", "winterarc", "chess", "chessboard",
+    "selfimprovement", "selfgrowth", "growthmindset", "dailyreminder",
 ]
 
 ENT_KEYWORDS = [
@@ -161,8 +164,8 @@ ENT_KEYWORDS = [
     "edit", "transition", "compilation", "wait",
     "end", "watch", "subscribe", "like",
     "share", "comment", "channel", "link",
-    "bio", "giveaway", "motivation", "motivational",
-    "mindset", "millionaire", "rich", "success",
+    "bio", "giveaway",
+    "millionaire", "rich", "success",
     "asmr", "satisfying", "slime", "crushing",
     "hydraulic", "relaxing", "sleep", "mukbang",
     "eating", "tasting", "foodie", "street",
@@ -191,6 +194,9 @@ ENT_KEYWORDS = [
     "gym", "gyms", "hustle", "grindset",
     "statuses", "aesthetic", "vibes", "pranks",
     "tiktok", "couples", "crush", "flirting",
+    "filler",
+    "hairstyle", "makeover", "giveaways", "hype",
+    "iptv", "m3u", "streamline", "workflow",
 ]
 
 # Words that show up on the Shorts surface but are not part of the title/channel.
@@ -273,6 +279,8 @@ INFO_PHRASES = [
     "make a", "at home", "science project", "diy project",
     "built from scratch", "how i built", "case study", "what happens if",
     "documentary",
+    "previous year paper",
+    "best books", "study plan", "timetable for", "important chapters",
 ]
 
 ENT_PHRASES = [
@@ -294,6 +302,14 @@ ENT_PHRASES = [
     "gym motivation", "gym status", "motivation status", "workout status",
     "bodybuilding status", "they dont know", "sigma edit", "gym edit",
     "fitness status", "comedy sketch",
+    "edit status", "aesthetic edit",
+    "motivation edit", "grindset edit", "sigma grindset", "wala dost",
+    "gamified learning", "possibilities waiting", "changes ahead", "learn from the best",
+    "1 crore in total", "for 3 days", "download hd videos", "smooth playback",
+    "iptv player", "m3u playlists", "streamline your workflow", "giving away",
+    "verified girls", "meet girls", "hair generator", "ideal hairstyle",
+    "sign up", "video chat", "video chat rooms", "1v1 video chat",
+    "try now", "install now", "download now", "sign up now",
 ]
 
 

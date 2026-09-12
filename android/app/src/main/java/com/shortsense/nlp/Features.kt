@@ -59,6 +59,20 @@ object Features {
         if (normalized.isEmpty()) emptyList() else normalized.split(' ')
 
     /**
+     * Function words carry no topic signal, and leaving them in let the model learn weights
+     * for "the" and "of" as stand-ins for title length: a real Short reading "roast of the
+     * year" was kept because "the" scored +4.0 as informative. Bigrams and phrases still see
+     * them, so they still count where they mean something in context.
+     */
+    private val STOPWORDS = setOf(
+        "a", "an", "the", "of", "to", "in", "on", "for", "and", "or", "is", "are", "was",
+        "be", "it", "its", "this", "that", "these", "those", "with", "as", "at", "by",
+        "from", "you", "your", "i", "my", "me", "we", "he", "she", "they", "him", "her",
+        "them", "his", "do", "does", "did", "so", "if", "but", "not", "no", "yes", "will",
+        "can", "just", "up", "out", "all", "how", "what", "why", "when", "who"
+    )
+
+    /**
      * All features for one Short. Sorted, because the fixture and the tests compare lists.
      */
     fun features(title: String, channel: String?, lex: Lexicon): List<String> {
@@ -70,13 +84,16 @@ object Features {
         val feat = HashSet<String>(64)
 
         for (w in ttok) {
+            if (w in STOPWORDS) continue
             if (w.length >= 2) feat.add("w:$w")
         }
         for (w in ctok) {
+            if (w in STOPWORDS) continue
             if (w.length >= 2) feat.add("w:$w")
         }
 
         for (w in ttok + ctok) {
+            if (w in STOPWORDS) continue
             if (w.length >= 2) {
                 val s = stem(w)
                 if (s.length >= 2) {
@@ -112,8 +129,7 @@ object Features {
                     }
                 }
             }
-            if (w.length >= 2) feat.add("p2:" + w.substring(0, 2))
-            if (w.length > 3) feat.add("s3:" + w.substring(w.length - 3))
+            // p2/s3 are deliberately NOT built: see the ablation note in model/features.py
         }
 
         if (tnorm.isNotEmpty()) {

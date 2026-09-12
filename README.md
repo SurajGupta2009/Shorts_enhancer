@@ -50,7 +50,7 @@ That is the whole setup. The app asks for exactly one permission.
 | Control | What it does |
 |---|---|
 | **What counts as useful** | *Informative* — study and exam problems (P/C/M), motivation that teaches something, science and explainers, new ideas and inventions, history, politics and civics — or *Study only* (academic material; stricter, see the caveat below) |
-| **Strictness** | Five rungs, each measured against the hand-written cases and quoted in the app: *Fewest interruptions* blocks 0% of the useful Shorts in the hand-written set and lets 5% of the junk through, *Balanced* (the default) blocks 0.8% / 2.7%, and *Maximum filtering* blocks 5.7% / 2.7% — the measured rates for every rung are printed by `model/train.py`. |
+| **Strictness** | Five rungs, each measured against the hand-written cases and quoted in the app: *Fewest interruptions* blocks 0% of the useful Shorts in the hand-written set and lets 11% of the junk through, *Balanced* (the default) blocks 0.0% / 1.3%, and *Maximum filtering* blocks 6.3% / 0.0% — the measured rates are printed by `model/train.py` and shown next to each rung in the app. |
 | **When a Short is blocked** | Either the countdown **skips to the next Short**, or it **leaves Shorts** entirely |
 | **Countdown seconds** | 0–10, or off (the block screen then waits for you) |
 | **Channels** | Anything you allow-list is never judged again. Names are normalised, so "@Physics Wallah", "Physics Wallah · Subscribe" and "Physics Wallah" are one channel, and a stored name also covers that channel's suffixed variants (Hindi, Shorts, Clips). The app can learn a channel from your taps: three *Keep* taps on it and it is allowed. |
@@ -161,10 +161,11 @@ Measured on the held-out sets (`python3 model/train.py` regenerates this table):
 
 | set | useful content blocked | junk let through |
 |---|---|---|
-| 197 hand-written borderline titles | **0.8%** | **2.7%** |
-| unseen topics, synthetic | 0.6% | 2.9% |
+| 206 hand-written borderline titles | **0.0%** | **1.3%** |
+| unseen topics, synthetic | 0.2% | 2.9% |
 
-98.5% of the hand-written cases are decided correctly. The threshold itself is chosen on
+99.5% of the hand-written cases are decided correctly, and none of the 127 informative
+ones are blocked. The threshold itself is chosen on
 that same list (the point that minimises useful-blocked + junk-kept, taken at the middle of
 its plateau), so read the 98.5% as lightly optimistic rather than as a held-out score.
 *Study only* is the weaker mode: study material is a subset of informative material, and no

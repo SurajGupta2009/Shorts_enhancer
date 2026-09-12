@@ -50,6 +50,9 @@ object ShortsSurface {
 
     private val CLASS_HINTS = listOf("shorts", "reelwatch")
 
+    /** YouTube's own label for a promoted Short: its text is an advert, not a title. */
+    private val AD_LABELS = setOf("sponsored", "promoted", "ad", "paid promotion")
+
     private const val MAX_NODES = 4000
     private const val MAX_DEPTH = 40
 
@@ -58,7 +61,9 @@ object ShortsSurface {
         val title: String,
         val channel: String,
         val trace: String,
-        val playerIdSeen: String?
+        val playerIdSeen: String?,
+        /** YouTube marked this one as a promoted Short: its text is an advert. */
+        val sponsored: Boolean = false
     )
 
     fun isShortsWindowClass(className: CharSequence?): Boolean {
@@ -88,13 +93,20 @@ object ShortsSurface {
         val titleCandidates = ArrayList<Candidate>()
         val channelCandidates = ArrayList<Candidate>()
         val seen = HashSet<String>()
+        var sponsored = false
 
         walk(root) { node ->
             val raw = node.text?.toString()?.takeIf { it.isNotBlank() }
                 ?: node.contentDescription?.toString()?.takeIf { it.isNotBlank() }
                 ?: return@walk
-            val id = node.viewIdResourceName?.substringAfterLast('/') ?: ""
+            val id = node.viewIdResourceName?.substringAfterLast('/')?.lowercase() ?: ""
             val cls = node.className?.toString() ?: ""
+
+            // the advert label is chrome to the classifier but a signal to the service
+            if (raw.trim().lowercase() in AD_LABELS || id.contains("ad_badge")) sponsored = true
+
+            // a comment, a reply, the report sheet or an ad unit: never the video's title
+            if (insideNonContent(node, id)) return@walk
 
             for (piece in ShortsText.classify(raw)) {
                 when (piece.kind) {
@@ -140,19 +152,42 @@ object ShortsSurface {
             append("]")
         }
 
-        return Result(playerId != null, title, channel, trace, playerId)
+        if (sponsored) trace += " sponsored=true"
+        return Result(playerId != null, title, channel, trace, playerId, sponsored)
     }
 
     /** Titles are sometimes split across two nodes (main line + hashtags line). */
     private fun buildTitle(sorted: List<Candidate>): String {
         val best = sorted.firstOrNull() ?: return ""
-        if (best.text.length >= 60) return best.text.take(180)
-        val second = sorted.drop(1).firstOrNull { it.score >= best.score * 0.7 } ?: return best.text
-        val joined = best.text + " " + second.text
-        return if (joined.length <= 190) joined else best.text
+        val cleaned = ShortsText.stripGluedUi(best.text)
+        val kept = if (cleaned.length >= 3) cleaned else best.text
+        if (kept.length >= 60) return kept.take(180)
+        val second = sorted.drop(1).firstOrNull { it.score >= best.score * 0.7 } ?: return kept
+        val joined = kept + " " + ShortsText.stripGluedUi(second.text)
+        return if (joined.length <= 190) joined else kept
     }
 
     private class Candidate(val text: String, val score: Double, val id: String)
+
+    /**
+     * Comments, replies, the bottom sheet and ad units: never the video's own title.
+     * The rule itself lives in ShortsText so it can be unit tested.
+     */
+    private fun insideNonContent(node: AccessibilityNodeInfo, id: String): Boolean {
+        if (ShortsText.isNonContentId(id)) return true
+        return try {
+            var parent = node.parent
+            var depth = 0
+            while (parent != null && depth < 6) {
+                if (ShortsText.isNonContentId(parent.viewIdResourceName)) return true
+                parent = parent.parent
+                depth++
+            }
+            false
+        } catch (t: Throwable) {
+            false
+        }
+    }
 
     private fun isButtonOrChrome(className: String, id: String): Boolean {
         val cls = className.lowercase()

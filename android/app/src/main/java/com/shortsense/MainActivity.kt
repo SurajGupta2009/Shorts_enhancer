@@ -27,7 +27,6 @@ class MainActivity : Activity() {
     private val presetNames = listOf(
         "Fewest interruptions", "Gentle", "Balanced", "Strict", "Maximum filtering"
     )
-    private val presetBudget = listOf(1, 2, 5, 10, 20)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,19 +53,10 @@ class MainActivity : Activity() {
             refresh()
         }
 
-        // strictness
-        val strictness = findViewById<SeekBar>(R.id.strictness)
-        strictness.max = presetNames.size - 1
-        strictness.progress = settings.presetIndex
-        strictness.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(bar: SeekBar?, value: Int, fromUser: Boolean) {
-                settings.presetIndex = value
-                refresh()
-            }
-
-            override fun onStartTrackingTouch(bar: SeekBar?) = Unit
-            override fun onStopTrackingTouch(bar: SeekBar?) = Unit
-        })
+        // strictness: five named buttons, each quoting what it actually measured on the
+        // hand-written cases. A slider here was a trap - one stray nudge during a scroll
+        // moved the user from Balanced to Strict without them noticing.
+        renderPresets()
 
         // action
         val skip = findViewById<Switch>(R.id.switchSkip)
@@ -128,8 +118,20 @@ class MainActivity : Activity() {
             if (settings.enabled && running) R.string.status_hint_on else R.string.status_hint_off
         )
 
-        findViewById<TextView>(R.id.strictnessLabel).text =
-            "${presetNames[settings.presetIndex]} — blocks about ${presetBudget[settings.presetIndex]}% of useful Shorts"
+        val meta = runCatching { com.shortsense.nlp.ModelMeta.load(this) }.getOrNull()
+        val rung = settings.presetIndex.coerceIn(0, presetNames.size - 1)
+        val threshold = meta?.informativePresets?.getOrNull(rung)
+        val blockedNow = meta?.presetUsefulBlocked?.getOrNull(rung)
+        val junkNow = meta?.presetJunkKept?.getOrNull(rung)
+        findViewById<TextView>(R.id.strictnessLabel).text = buildString {
+            append("On: ").append(presetNames[rung])
+            if (threshold != null) {
+                append(" (threshold ").append(String.format(java.util.Locale.US, "%+.1f", threshold)).append(")")
+            }
+            if (blockedNow != null && junkNow != null) {
+                append(" — blocks ${pct(blockedNow)} of useful Shorts, lets ${pct(junkNow)} of junk through")
+            }
+        }
         findViewById<TextView>(R.id.strictnessExplain).text = explainPreset(settings.presetIndex)
 
         findViewById<TextView>(R.id.countdownLabel).text = if (settings.countdownSeconds == 0) {
@@ -144,6 +146,53 @@ class MainActivity : Activity() {
 
         renderChannelList()
         renderModelInfo()
+    }
+
+    private fun renderPresets() {
+        val box = findViewById<LinearLayout>(R.id.presetBox)
+        box.removeAllViews()
+        val meta = runCatching { com.shortsense.nlp.ModelMeta.load(this) }.getOrNull()
+        val group = android.widget.RadioGroup(this).apply { orientation = LinearLayout.VERTICAL }
+        for (i in presetNames.indices) {
+            val blocked = meta?.presetUsefulBlocked?.getOrNull(i)
+            val junk = meta?.presetJunkKept?.getOrNull(i)
+            val threshold = meta?.informativePresets?.getOrNull(i)
+            val measured = if (blocked != null && junk != null) {
+                " — blocks ${pct(blocked)} of useful Shorts, lets ${pct(junk)} of junk through"
+            } else {
+                ""
+            }
+            val label = if (threshold != null) {
+                "${presetNames[i]} (threshold ${String.format(java.util.Locale.US, "%+.1f", threshold)})$measured"
+            } else {
+                presetNames[i] + measured
+            }
+            group.addView(RadioButton(this).apply {
+                id = 1000 + i
+                text = label
+                textSize = 13f
+                setPadding(4, 16, 4, 16)
+                isChecked = i == settings.presetIndex
+            })
+        }
+        group.setOnCheckedChangeListener { _, id ->
+            val index = id - 1000
+            if (index in presetNames.indices && index != settings.presetIndex) {
+                settings.presetIndex = index
+                refresh()
+            }
+        }
+        box.addView(group)
+    }
+
+    /** 0.008 -> "0.8%", 0.0 -> "0%": a small rate must not read as exactly zero. */
+    private fun pct(v: Double): String {
+        val p = v * 100.0
+        return when {
+            p <= 0.0 -> "0%"
+            p < 1.0 -> String.format(java.util.Locale.US, "%.1f%%", p)
+            else -> String.format(java.util.Locale.US, "%.0f%%", p)
+        }
     }
 
     private fun explainPreset(index: Int): String = when (index) {

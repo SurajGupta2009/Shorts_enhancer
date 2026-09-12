@@ -126,6 +126,8 @@ JUNK_CHANNELS = {
         "Prank King", "Social Experiment Fun", "Street Food Frenzy",
         # channels from the device log the app was tested against
         "Jettism", "Neera",
+        # channels from the device log the app was tested against
+        "Jettism", "Neera",
         "Mukbang India", "Foodie Vlogger", "5 Minute Crafts", "Crafty Ideas",
         "Satisfying Slime ASMR", "Oddly Satisfying", "ASMR Relaxing Sounds",
         "Fashion Lookbook", "Beauty Glow Tips", "Makeup Transformation",
@@ -390,6 +392,8 @@ STUDY_GROUPS = [
 
 JUNK_GROUPS = [
     ("comedy", [
+        "hotel wala dost", "school wala dost", "college wala dost", "sharma ji ka beta",
+        "ghar wala dost", "office wala dost",
         "funny video", "comedy skit", "roast", "stand up bit", "meme review",
         "funny exam answer", "teacher vs student comedy", "family comedy scene",
         "desi comedy", "village comedy", "prank on friend", "public prank",
@@ -1216,6 +1220,11 @@ def build(rng, n_target=26000, holdout=False, include_devanagari=True):
         "resume formatting", "linkedin profile", "cover letter", "interview answers",
         "saving money monthly", "budget planning", "fixing a leaking tap", "wall drilling",
         "typing speed", "first aid for cuts", "plant care", "car maintenance basics",
+        "editing reels like a pro", "video editing on a phone", "capcut transitions",
+        "premiere pro basics", "after effects motion graphics", "colour grading a short film",
+        "green screen setup", "thumbnail design that gets clicks", "photoshop masking",
+        "canva design basics", "2d animation basics", "3d printing your first part",
+        "shooting video in low light", "sound design for reels", "lighting a talking head",
     ]
     SKILL_TEMPLATES = [
         "{topic} tutorial",
@@ -1276,6 +1285,7 @@ def build(rng, n_target=26000, holdout=False, include_devanagari=True):
         "choosing a career", "the habit of showing up", "why discipline beats motivation",
         "focus in the age of reels", "being a beginner again", "the cost of comfort",
         "the fear of failing", "staying away from your phone", "why you should keep going",
+        "discipline for students", "studying with discipline", "being disciplined as a student",
     ]
     MOTIVATION_TEMPLATES = [
         "a talk on {topic} worth 10 minutes",
@@ -1293,6 +1303,8 @@ def build(rng, n_target=26000, holdout=False, include_devanagari=True):
         "this motivational speech will change how you study",
         "listen to this before you quit — motivational speech",
         "a motivational speech for every student who feels stuck",
+        "motivational speech on {topic} for students",
+        "a motivational speech about {topic}",
     ]
     for _ in range(n_target // 40 if not holdout else n_target // 200):
         topic = rng.choice(MOTIVATION_TOPICS)
@@ -1433,11 +1445,96 @@ def build(rng, n_target=26000, holdout=False, include_devanagari=True):
         "science project: {thing}",
         "making {thing} with cheap parts",
         "{thing} - beginner's guide",
+        "how I made my own {thing}",
+        "making my own {thing}",
+        "I made {thing} myself",
+        "{thing} - my build log",
+        "{thing}: exactly how I built it",
     ]
     for _ in range(n_target // 60 if not holdout else n_target // 300):
         thing = rng.choice(MAKER_THINGS)
         title = _decorate(rng, _typo(rng, rng.choice(MAKER_TEMPLATES).format(thing=thing)), "info")
         add("info", title, _mutate_channel(rng, rng.choice(INFORMATIVE_CHANNELS["explainer"])), "maker_tutorial")
+
+    # ---- self-improvement series and chess thinking
+    # Both are how "motivation that teaches something" actually reaches a phone, and both
+    # were missing: a real Short reading "Day 111/365 #selfimprovement #motivation
+    # #dailyreminder #winterarc" scored -6 and got blocked, and a chess endgame Short -3.
+    SERIES_TAGS = [
+        "#selfimprovement #motivation #dailyreminder #winterarc",
+        "#growthmindset #dailyinspiration #discipline #selfgrowth",
+        "#motivation #mindset #consistency #studymotivation",
+        "#selfimprovement #habits #focus #discipline",
+    ]
+    SERIES_LINES = [
+        "Day {n}/365 {tags}", "Day {n}: {tags}", "{n}/365 — one habit a day {tags}",
+        "day {n} of becoming better {tags}",
+    ]
+    for _ in range(n_target // 80 if not holdout else n_target // 400):
+        title = _decorate(rng, rng.choice(SERIES_LINES).format(n=rng.randint(1, 365),
+                                                             tags=rng.choice(SERIES_TAGS)), "info")
+        add("info", title, _mutate_channel(rng, rng.choice(INFORMATIVE_CHANNELS["motivation"])), "self_improvement_series")
+
+    CHESS_LINES = [
+        "brilliant endgame", "can you find the mate in 3", "why this move wins the game",
+        "the pawn structure nobody explains", "this sacrifice is the whole game",
+        "how to calculate in the middlegame", "endgame technique: king and pawn",
+        "the opening that teaches chess fundamentals",
+    ]
+    CHESS_TEMPLATES = [
+        "What a brilliant {line} 😮🔥 brilliant Chess ♟️", "{line} — a chess lesson",
+        "{line} | chess puzzle", "{line} explained", "grandmaster shows: {line}",
+    ]
+    for _ in range(n_target // 100 if not holdout else n_target // 500):
+        line = rng.choice(CHESS_LINES)
+        title = _decorate(rng, rng.choice(CHESS_TEMPLATES).format(line=line), "info")
+        add("info", title, _mutate_channel(rng, rng.choice(INFORMATIVE_CHANNELS["explainer"])), "chess_thinking")
+
+    # ---- Hinglish (roman script) exam preparation
+    # "sarkari naukri ke liye best books" scored -8 and was blocked: the corpus taught Hindi
+    # study content in Devanagari and English exam content in English, and the way exam prep
+    # actually appears on Shorts is neither.
+    HINGLISH_EXAM_TOPICS = [
+        "sarkari naukri ke liye best books", "ssc cgl ki taiyari", "railway exam ka syllabus",
+        "bank exam ki tayari kaise kare", "upsc ke liye kaunsi books padhe",
+        "neet ki biology kaise padhe", "jee mains ka time table", "government job ki teyari",
+        "police bharti ki taiyari", "teacher bharti ka syllabus",
+        "handwritten notes kaha se le", "exam ke liye revision kaise kare",
+    ]
+    HINGLISH_EXAM_TEMPLATES = [
+        "{topic} — puri jankari", "{topic} | full guide", "how to prepare: {topic}",
+        "{topic} (step by step plan)", "{topic} — sach kya hai", "{topic} for beginners",
+        "{topic} in 60 seconds", "{topic} — selection ke liye zaroori",
+    ]
+    for _ in range(n_target // 70 if not holdout else n_target // 350):
+        topic = rng.choice(HINGLISH_EXAM_TOPICS)
+        title = _decorate(rng, _typo(rng, rng.choice(HINGLISH_EXAM_TEMPLATES).format(topic=topic)), "study")
+        add("study", title, _mutate_channel(rng, rng.choice(INFORMATIVE_CHANNELS["study"])), "hinglish_exam")
+
+    # ---- study advice, career guidance and phone discipline
+    # Real Shorts the model blocked: "how toppers use instagram without wasting time" and
+    # "types of engineering branches — which one to pick". The corpus had problems and
+    # revision but no advice.
+    ADVICE_TOPICS = [
+        "how toppers study", "how to use instagram without wasting time",
+        "which engineering branch to pick", "career options after 12th",
+        "how to stop procrastinating while studying", "phone addiction while studying",
+        "how to make a timetable that works", "how to revise effectively",
+        "which stream to choose after 10th", "college or a drop year",
+        "how to prepare for boards in a month", "how to stay awake while studying",
+        "note making that actually helps", "how to focus in a noisy house",
+        "choosing between two careers", "skills worth learning in college",
+    ]
+    ADVICE_TEMPLATES = [
+        "{topic} — a student's guide", "{topic} (honest advice)", "{topic} — what I did",
+        "{topic}: everything you need to know", "should you {topic}?",
+        "{topic}, explained by a topper", "{topic} — the mistakes to avoid",
+        "{topic} in 90 seconds",
+    ]
+    for _ in range(n_target // 70 if not holdout else n_target // 350):
+        topic = rng.choice(ADVICE_TOPICS)
+        title = _decorate(rng, _typo(rng, rng.choice(ADVICE_TEMPLATES).format(topic=topic)), "info")
+        add("info", title, _mutate_channel(rng, rng.choice(INFORMATIVE_CHANNELS["study"])), "study_advice")
 
     # ---- Devanagari slice (split by title hash so train/test stay disjoint)
     dev = augment_devanagari(rng, 1500 if not holdout else 350)
