@@ -417,6 +417,7 @@ class ShortsWatcherService : AccessibilityService() {
             callbacks = object : BlockOverlay.Callbacks {
                 override fun onKeep() = dismissOverlay()
                 override fun onAlwaysAllow() = dismissOverlay()
+                override fun onNeverShow() = dismissOverlay()
                 override fun onLeaveNow() = dismissOverlay()
             }
         )
