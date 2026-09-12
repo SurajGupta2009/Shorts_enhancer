@@ -26,6 +26,17 @@
             </intent-filter>
         </activity>
 
+        <!--
+          Read-only access to the exported log file, granted per share. exported="false"
+          means no other app can reach it on its own.
+        -->
+        <provider
+            android:name=".ExportProvider"
+            android:authorities="com.shortsense.exports"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            android:label="@string/export_provider_label" />
+
         <activity
             android:name=".DebugActivity"
             android:exported="false"

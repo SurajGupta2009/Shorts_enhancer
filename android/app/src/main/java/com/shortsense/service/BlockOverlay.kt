@@ -36,12 +36,14 @@ class BlockOverlay(private val context: Context) {
     private var view: View? = null
     private var timer: CountDownTimer? = null
     private var countdownText: TextView? = null
+    private var statusText: TextView? = null
 
     fun isShowing(): Boolean = view != null
 
     interface Callbacks {
         fun onKeep()
         fun onAlwaysAllow()
+        fun onNeverShow()
         fun onLeaveNow()
     }
 
@@ -120,6 +122,16 @@ class BlockOverlay(private val context: Context) {
         countdownText = counter
         card.addView(counter)
 
+        // Feedback for the channel buttons. A Toast is not an option: Android blocks them
+        // from the background, and a button that silently does nothing is exactly the bug
+        // this line exists to prevent.
+        val status = label("", 13f, Color.parseColor("#FF2EE6A9"), bold = true).apply {
+            setPadding(0, dp(4), 0, 0)
+            visibility = View.GONE
+        }
+        statusText = status
+        card.addView(status)
+
         val row = LinearLayout(context).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER
@@ -127,7 +139,14 @@ class BlockOverlay(private val context: Context) {
         row.addView(button(context.getString(R.string.blocked_keep), fill = false) { callbacks.onKeep() })
         row.addView(button(context.getString(R.string.blocked_allow), fill = false) { callbacks.onAlwaysAllow() })
         card.addView(row)
-        card.addView(button(context.getString(R.string.blocked_exit), fill = true) { callbacks.onLeaveNow() })
+
+        val row2 = LinearLayout(context).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+        }
+        row2.addView(button(context.getString(R.string.blocked_never), fill = false) { callbacks.onNeverShow() })
+        row2.addView(button(context.getString(R.string.blocked_exit), fill = false) { callbacks.onLeaveNow() })
+        card.addView(row2)
 
         root.addView(card, LinearLayout.LayoutParams(dp(300), ViewGroup.LayoutParams.WRAP_CONTENT))
         view = root
@@ -199,10 +218,20 @@ class BlockOverlay(private val context: Context) {
             setOnClickListener { onClick() }
         }
 
+    /** Shows a one-line confirmation inside the card (channel added, and such). */
+    fun say(message: String) {
+        val status = statusText ?: return
+        status.text = message
+        status.visibility = View.VISIBLE
+        // the confirmation replaces the countdown so the two cannot contradict each other
+        countdownText?.text = ""
+    }
+
     fun dismiss() {
         timer?.cancel()
         timer = null
         countdownText = null
+        statusText = null
         view?.let {
             runCatching { windowManager.removeView(it) }
             view = null

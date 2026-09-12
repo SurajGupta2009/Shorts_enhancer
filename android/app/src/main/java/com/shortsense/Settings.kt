@@ -3,6 +3,7 @@ package com.shortsense
 import android.content.Context
 import android.content.SharedPreferences
 import com.shortsense.nlp.ChannelRules
+import com.shortsense.nlp.Channels
 import com.shortsense.nlp.Mode
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -54,17 +55,60 @@ class Settings(context: Context) {
     fun channelSet(kind: String): Set<String> =
         prefs.getStringSet("channels_$kind", emptySet())?.toMutableSet() ?: mutableSetOf()
 
+    /**
+     * Adds a channel to the allow or block list. The name is normalised the same way the
+     * classifier normalises what it reads off the screen (see [Channels]); without that,
+     * "Add" appeared to do nothing because the two strings never matched.
+     */
     fun addChannel(kind: String, raw: String) {
-        val name = raw.trim().lowercase().removePrefix("@")
+        val name = Channels.normalize(raw)
         if (name.isEmpty()) return
+        val edit = prefs.edit()
         val set = channelSet(kind).toMutableSet()
         set.add(name)
-        prefs.edit().putStringSet("channels_$kind", set).apply()
+        edit.putStringSet("channels_$kind", set)
+        // a channel cannot be in both lists - the later choice wins and the old one is dropped
+        val other = if (kind == "allow") "block" else "allow"
+        val otherSet = channelSet(other).toMutableSet()
+        if (otherSet.removeAll { Channels.normalize(it) == name }) {
+            edit.putStringSet("channels_$other", otherSet)
+        }
+        edit.apply()
+    }
+
+    /**
+     * Counts "keep" taps per channel, so the app can learn which channels the user keeps
+     * choosing instead of guessing from a single tap. Keyed by the normalised name, the
+     * same normalisation the lists use, so a learn event can never invent a duplicate
+     * spelling of a channel that is already allowed.
+     */
+    fun bumpKeep(raw: String): Int {
+        val name = Channels.normalize(raw)
+        if (name.isEmpty()) return 0
+        val next = keepCount(name) + 1
+        prefs.edit().putInt("keep_$name", next).apply()
+        return next
+    }
+
+    fun keepCount(raw: String): Int {
+        val name = Channels.normalize(raw)
+        if (name.isEmpty()) return 0
+        return prefs.getInt("keep_$name", 0)
+    }
+
+    fun clearKeepCounts() {
+        val edit = prefs.edit()
+        for (key in prefs.all.keys) {
+            if (key.startsWith("keep_")) edit.remove(key)
+        }
+        edit.apply()
     }
 
     fun removeChannel(kind: String, raw: String) {
+        val name = Channels.normalize(raw)
+        if (name.isEmpty()) return
         val set = channelSet(kind).toMutableSet()
-        set.remove(raw.trim().lowercase().removePrefix("@"))
+        set.removeAll { Channels.normalize(it) == name }
         prefs.edit().putStringSet("channels_$kind", set).apply()
     }
 

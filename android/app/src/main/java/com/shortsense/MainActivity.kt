@@ -38,6 +38,7 @@ class MainActivity : Activity() {
         findViewById<Button>(R.id.openDebug).setOnClickListener {
             startActivity(Intent(this, DebugActivity::class.java))
         }
+        findViewById<Button>(R.id.exportFromMain).setOnClickListener { exportLog() }
         findViewById<Button>(R.id.resetStats).setOnClickListener {
             settings.resetCounters()
             refresh()
@@ -120,8 +121,8 @@ class MainActivity : Activity() {
     private fun refresh() {
         val running = ShortsWatcherService.instance != null
         findViewById<TextView>(R.id.statusTitle).apply {
-            text = getString(if (settings.enabled && running) R.string.status_on else R.string.status_off)
-            setTextColor(getColor(if (settings.enabled && running) R.color.accent else R.color.danger))
+            text = if (settings.enabled && running) "● ON" else "● OFF"
+            setTextColor(getColor(if (settings.enabled && running) R.color.accent_bright else R.color.danger_bright))
         }
         findViewById<TextView>(R.id.statusHint).text = getString(
             if (settings.enabled && running) R.string.status_hint_on else R.string.status_hint_off
@@ -191,6 +192,21 @@ class MainActivity : Activity() {
                 "blocked ${((1 - meta.hardCaseJunkKept) * 100).toInt()}% of the junk " +
                 "(${(meta.hardCaseAccuracy * 100).toInt()}% of decisions correct overall)."
         )
+    }
+
+    /** Same export as the debug screen: useful when something went wrong and you want it out. */
+    private fun exportLog() {
+        try {
+            val report = LogExporter.build(this)
+            Toast.makeText(
+                this,
+                getString(R.string.export_done, report.decisions, report.blocked, report.kept),
+                Toast.LENGTH_LONG
+            ).show()
+            LogExporter.share(this, report)
+        } catch (t: Throwable) {
+            Toast.makeText(this, getString(R.string.export_failed, t.message ?: "?"), Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun openAccessibilitySettings() {

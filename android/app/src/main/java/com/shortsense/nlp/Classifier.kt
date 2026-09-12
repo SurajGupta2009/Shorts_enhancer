@@ -42,7 +42,6 @@ class Classifier(
         rules: ChannelRules
     ): Verdict {
         val chan = channel?.trim().orEmpty()
-        val key = chan.lowercase()
         val features = Features.features(title, chan, lex)
         val logits = model.logits(features)
         val theta = threshold(mode, presetIndex)
@@ -50,11 +49,11 @@ class Classifier(
         val explained = model.explain(features, mode == Mode.STUDY)
 
         // 1. anything the user explicitly allow-listed wins outright
-        if (key.isNotEmpty() && rules.allowed.contains(key)) {
+        if (Channels.matches(rules.allowed, chan)) {
             return Verdict(true, false, margin, theta, 1.0, explained, "you allow-listed $chan")
         }
         // 2. so does an explicit block
-        if (key.isNotEmpty() && rules.blocked.contains(key)) {
+        if (Channels.matches(rules.blocked, chan)) {
             return Verdict(false, false, margin, theta, 0.0, explained, "you blocked $chan")
         }
 

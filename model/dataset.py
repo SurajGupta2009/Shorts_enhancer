@@ -124,6 +124,8 @@ JUNK_CHANNELS = {
         "Love Status Hindi", "Sad Status Video", "Comedy Memes Daily",
         "Meme Factory India", "Funny Animals TV", "Try Not To Laugh",
         "Prank King", "Social Experiment Fun", "Street Food Frenzy",
+        # channels from the device log the app was tested against
+        "Jettism", "Neera",
         "Mukbang India", "Foodie Vlogger", "5 Minute Crafts", "Crafty Ideas",
         "Satisfying Slime ASMR", "Oddly Satisfying", "ASMR Relaxing Sounds",
         "Fashion Lookbook", "Beauty Glow Tips", "Makeup Transformation",
@@ -442,6 +444,9 @@ JUNK_GROUPS = [
         "pubg montage", "gaming funny moment", "blue whale challenge in game",
         "op gun skin", "new season update", "gameplay highlights",
         "noob vs pro", "clutch 1v5", "speedrun world record",
+        "trapping the sweatiest pvpers", "making him gamble", "trolling a sweat",
+        "manhunt finale", "bedwars clutch", "1v1 sword fight",
+        "rage quit moment", "lucky block opening", "hidden base reveal",
     ], [
         "{topic} 🤯",
         "{topic} — best gameplay",
@@ -451,6 +456,14 @@ JUNK_GROUPS = [
         "{topic} live reaction",
         "{topic} 4k gameplay",
         "who wins {topic}",
+        # a real Short read "Making Ohnepixel Gamble To His Death" and the model kept it:
+        # consequence-shaped gaming titles, not topics, are what this family needs
+        "{topic} — to his death",
+        "making {topic} to his death",
+        "trapping the sweatiest {topic}",
+        "{topic} gone wrong",
+        "I ruined {topic}'s day",
+        "{topic} rage compilation",
     ]),
     ("vlog", [
         "morning routine", "day in my life", "daily vlog", "travel vlog",
@@ -994,8 +1007,60 @@ JUNK_GROUPS += [
     ], []),
 ]
 
+# Adverts. A Short that is selling something is not worth watching, and the copy is
+# formulaic enough to learn: price, percentage off, a code, a renewal date.
+AD_TOPICS = [
+    "Amazon Music Unlimited", "a coding bootcamp", "a fitness app subscription",
+    "a gaming headset", "a credit card", "a trading app", "an online course",
+    "a protein powder", "a smartwatch", "a used car loan", "a mutual fund SIP",
+    "a cloud hosting plan", "an English speaking course", "a NEET test series",
+    "a laptop", "a D2C skincare range",
+]
+AD_TEMPLATES = [
+    "{topic} - 3 months free. Auto-renews at 119 per month",
+    "{topic}: limited time offer, use code SAVE50",
+    "get {topic} at 50% off today only",
+    "download the app and get cashback on {topic}",
+    "{topic} free trial for 30 days, cancel anytime",
+    "offer ends tonight: {topic} at a flat discount",
+    "sponsored: {topic} - buy now",
+    "{topic} price drop, order now",
+    "use my code to get {topic} cheaper",
+    "new {topic} launch - book now",
+]
+AD_CHANNELS = [
+    "Deals India Daily", "Offer Zone", "Shop Smart", "Ad Clips Official",
+    "Sale Alert India", "Promo Bazaar", "Brand Deals TV", "Discount Dekho",
+]
+
 # Adult / racy clickbait. The user asked for this to be blocked outright; title words are
 # the only signal available, and these are reliable ones.
+# Adverts. A Short that is selling something is not worth watching, and the copy is
+# formulaic enough to learn: price, percentage off, a code, a renewal date.
+AD_TOPICS = [
+    "Amazon Music Unlimited", "a coding bootcamp", "a fitness app subscription",
+    "a gaming headset", "a credit card", "a trading app", "an online course",
+    "a protein powder", "a smartwatch", "a used car loan", "a mutual fund SIP",
+    "a cloud hosting plan", "an English speaking course", "a NEET test series",
+    "a laptop", "a D2C skincare range",
+]
+AD_TEMPLATES = [
+    "{topic} - 3 months free. Auto-renews at 119 per month",
+    "{topic}: limited time offer, use code SAVE50",
+    "get {topic} at 50% off today only",
+    "download the app and get cashback on {topic}",
+    "{topic} free trial for 30 days, cancel anytime",
+    "offer ends tonight: {topic} at a flat discount",
+    "sponsored: {topic} - buy now",
+    "{topic} price drop, order now",
+    "use my code to get {topic} cheaper",
+    "new {topic} launch - book now",
+]
+AD_CHANNELS = [
+    "Deals India Daily", "Offer Zone", "Shop Smart", "Ad Clips Official",
+    "Sale Alert India", "Promo Bazaar", "Brand Deals TV", "Discount Dekho",
+]
+
 # Adult / racy clickbait. The user asked for this to be blocked outright, and the words
 # below are the signal: they are rare in legitimate study content and common in the
 # "watch before it is deleted" side of the feed.
@@ -1210,6 +1275,7 @@ def build(rng, n_target=26000, holdout=False, include_devanagari=True):
         "consistency", "the fear of starting", "handling failure", "comparing yourself to others",
         "choosing a career", "the habit of showing up", "why discipline beats motivation",
         "focus in the age of reels", "being a beginner again", "the cost of comfort",
+        "the fear of failing", "staying away from your phone", "why you should keep going",
     ]
     MOTIVATION_TEMPLATES = [
         "a talk on {topic} worth 10 minutes",
@@ -1220,6 +1286,13 @@ def build(rng, n_target=26000, holdout=False, include_devanagari=True):
         "what nobody tells you about {topic}",
         "a teacher's advice on {topic}",
         "{topic} — 5 minutes that will change your day",
+        # the word "speech" carries the intent in real feeds; templates that never contain
+        # it taught the model that a bare motivational title is a coin flip
+        "motivational speech on {topic}",
+        "{topic} — a motivational speech",
+        "this motivational speech will change how you study",
+        "listen to this before you quit — motivational speech",
+        "a motivational speech for every student who feels stuck",
     ]
     for _ in range(n_target // 40 if not holdout else n_target // 200):
         topic = rng.choice(MOTIVATION_TOPICS)
@@ -1283,6 +1356,88 @@ def build(rng, n_target=26000, holdout=False, include_devanagari=True):
         topic = rng.choice(CREATOR_ECONOMY)
         title = _decorate(rng, _typo(rng, rng.choice(CREATOR_TEMPLATES).format(topic=topic)), "info")
         add("info", title, _mutate_channel(rng, rng.choice(INFORMATIVE_CHANNELS["explainer"])), "creator_economy")
+
+    # ---- adverts
+    for _ in range(n_target // 45 if not holdout else n_target // 220):
+        topic = rng.choice(AD_TOPICS)
+        title = _decorate(rng, _typo(rng, rng.choice(AD_TEMPLATES).format(topic=topic)), "ent")
+        channel = _mutate_channel(rng, rng.choice(AD_CHANNELS))
+        add("ent", title, channel, "advert")
+
+    # ---- exam and recruitment news
+    # Students actively want these ("last date", "answer key", "cut off"): they are
+    # informative even though the wording looks like a headline.
+    EXAM_NEWS_TOPICS = [
+        "NEET 2027 registration", "JEE Mains session 2", "UPSC CSE prelims",
+        "SSC CGL notification", "board exam date sheet", "CUET application",
+        "GATE answer key", "state PSC vacancy", "police recruitment", "NIT counselling",
+        "scholarship portal", "university admission", "CTET result", "NDA notification",
+        "exam centre change", "re-evaluation window",
+    ]
+    EXAM_NEWS_TEMPLATES = [
+        "{topic} — official update",
+        "{topic} latest news",
+        "{topic} notification out",
+        "{topic}: answer key released",
+        "{topic} — last date extended",
+        "{topic} new update for students",
+        "{topic} — what you must know today",
+        "{topic} full details",
+        "{topic} cut off and merit list",
+        "{topic} — important announcement",
+    ]
+    for _ in range(n_target // 26 if not holdout else n_target // 110):
+        topic = rng.choice(EXAM_NEWS_TOPICS)
+        title = _decorate(rng, _typo(rng, rng.choice(EXAM_NEWS_TEMPLATES).format(topic=topic)), "exam")
+        add("exam", title, _mutate_channel(rng, rng.choice(INFORMATIVE_CHANNELS["study"])), "exam_news")
+
+    # ---- science explainers with ordinary subjects
+    # The failure these exist for: "physics of a football free kick" was blocked, because
+    # football and free kicks are junk-shaped words. The word "physics of" is the signal.
+    EXPLAINER_TOPICS = [
+        "a football free kick", "a spinning football", "a bicycle staying upright",
+        "ice floating on water", "a curveball in cricket", "a goalkeeper's dive",
+        "why the sky is blue", "a paper aeroplane", "a spinning top", "a boomerang",
+        "a skateboard ollie", "a swimming stroke", "a boxing punch", "a cricket bowl",
+        "how noise cancelling headphones work", "how a microwave heats food",
+    ]
+    EXPLAINER_TEMPLATES = [
+        "the physics of {topic}",
+        "the physics behind {topic}",
+        "the science behind {topic}",
+        "{topic} — the science explained",
+        "why {topic} — physics in 60 seconds",
+        "the mathematics of {topic}",
+    ]
+    for _ in range(n_target // 40 if not holdout else n_target // 180):
+        topic = rng.choice(EXPLAINER_TOPICS)
+        title = _decorate(rng, rng.choice(EXPLAINER_TEMPLATES).format(topic=topic), "science")
+        add("science", title, _mutate_channel(rng, rng.choice(INFORMATIVE_CHANNELS["explainer"])), "explainer")
+
+    # ---- maker / DIY / how-it-is-made
+    # "how to make a robot at home" scored -16 before this slice: the words robot/diy/build
+    # were simply absent from the corpus, so the classifier had no feature to weigh and
+    # defaulted to junk. Build tutorials are exactly the "ideas" content the app should keep.
+    MAKER_THINGS = [
+        "a robot", "an Arduino car", "a drone", "a mini fan", "a phone stand",
+        "a wifi antenna", "a 3D printer", "a solar charger", "a line follower robot",
+        "a homemade battery", "a water filter", "a telescope", "a paper speaker",
+        "a voice-controlled light", "a Bluetooth speaker", "a mini water pump",
+    ]
+    MAKER_TEMPLATES = [
+        "how to make {thing} at home",
+        "how to make {thing} - full tutorial",
+        "{thing} - how it works",
+        "I built {thing} from scratch",
+        "{thing} - step by step build",
+        "science project: {thing}",
+        "making {thing} with cheap parts",
+        "{thing} - beginner's guide",
+    ]
+    for _ in range(n_target // 60 if not holdout else n_target // 300):
+        thing = rng.choice(MAKER_THINGS)
+        title = _decorate(rng, _typo(rng, rng.choice(MAKER_TEMPLATES).format(thing=thing)), "info")
+        add("info", title, _mutate_channel(rng, rng.choice(INFORMATIVE_CHANNELS["explainer"])), "maker_tutorial")
 
     # ---- Devanagari slice (split by title hash so train/test stay disjoint)
     dev = augment_devanagari(rng, 1500 if not holdout else 350)

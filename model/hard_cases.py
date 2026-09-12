@@ -214,7 +214,37 @@ HARD_CASES = [
     dict(title="top 10 memes of the week 😂", channel="Meme Factory India", informative=0, study=0, note="meme compilation"),
     dict(title="sigma grindset motivation edit", channel="Sigma Motivation Hindi", informative=0, study=0, note="motivational edit that teaches nothing"),
     dict(title="gym motivation status — no excuses", channel="Beast Mode Motivation", informative=0, study=0, note="hype edit"),
+
+    # ---------- taken from a real phone's detection log ----------
+    # These exact strings appeared on the device; the notes record what happened there.
+    dict(title="advanced concept #maths #mathsshorts #jee #jeemains #upsc #knowledge",
+         channel="devsir2240", informative=1, study=1, note="on-device: JEE/UPSC maths short, kept"),
+    dict(title="SUJEET SIR IN 80s 😂 |ARJUNA NEET |Physics wallah #pw #neet #biology",
+         channel="Physics Wallah", informative=1, study=1, note="on-device: exam-humour clip from a study channel, the user wanted it kept"),
+    dict(title="Vishy Anand vs Magnus Carlsen | Are you not entertained? AI Learns to play chess",
+         channel="AI Explained", informative=1, study=0, note="on-device: AI/chess explainer"),
+    dict(title="How I Made my own Smart Glasses",
+         channel="Maker Workshop", informative=1, study=0, note="on-device: maker project, was wrongly blocked"),
+    dict(title="Trapping The Sweatiest PVPers in Minecraft",
+         channel="Jettism", informative=0, study=0, note="on-device: gameplay, was wrongly kept"),
+    dict(title="Making Ohnepixel Gamble To His Death",
+         channel="Jettism", informative=0, study=0, note="on-device: gambling-adjacent gaming clip"),
+    dict(title="Mix – Memory reboot (Ultra slowed & reverb)",
+         channel="Trap Nation", informative=0, study=0, note="on-device: slowed song upload"),
+    dict(title="You Have No Girlfriend 💯 ( Watch This ) | Relationship Advice",
+         channel="Neera", informative=0, study=0, note="on-device: bait, blocked correctly"),
+
+    # ---------- adverts ----------
+    dict(title="Amazon Music Unlimited - 3 months free. Auto-renews at ₹119/month",
+         channel="Deals India Daily", informative=0, study=0, note="on-device: advert"),
+    dict(title="Limited time offer: 50% off on all courses, use code STUDY50",
+         channel="Coding Ninjas", informative=0, study=0, note="advert from an education brand"),
+    dict(title="Download the app now and get ₹100 cashback",
+         channel="Offer Zone", informative=0, study=0, note="advert"),
+    dict(title="sponsored: buy now, price drop on the new smartwatch",
+         channel="Shop Smart", informative=0, study=0, note="advert"),
 ]
+
 
 def stats():
     n = len(HARD_CASES)

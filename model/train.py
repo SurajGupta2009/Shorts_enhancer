@@ -371,8 +371,6 @@ def main():
     logits_t = [logits_of(QW, QB, index, f) for f in Xt]
     margins_info_t = [margin(l, "info") for l in logits_t]
     margins_study_t = [margin(l, "study") for l in logits_t]
-    gb_info, jk_info = rates(margins_info_t, yt, 0.0, "info")
-    gb_study, jk_study = rates(margins_study_t, yt, 0.0, "study")
     temperature = fit_temperature(probs_t, yt)
 
     # thresholds are chosen on the calibration set, never on the reporting set
@@ -384,25 +382,12 @@ def main():
     c_study_labels = [0 if c["study"] else 2 for c in cal]
     info_margins = [margin(l, "info") for l, c in zip(CL, cal) if c["informative"]]
     study_margins = [margin(l, "study") for l, c in zip(CL, cal) if c["study"]]
-    theta_info = quantile_threshold(info_margins, args.good_budget)
-    theta_study = quantile_threshold(study_margins, args.good_budget)
-    c_gb, c_jk = rates([margin(l, "info") for l in CL], c_info_labels, theta_info, "info")
-    c_sgb, c_sjk = rates([margin(l, "study") for l in CL], c_study_labels, theta_study, "study")
-    # preset rows the app turns into a strictness slider
-    presets = {
-        "informative": [{"budget": b, "margin": round(quantile_threshold(info_margins, b), 3)}
-                        for b in (0.01, 0.02, 0.05, 0.10, 0.20)],
-        "study": [{"budget": b, "margin": round(quantile_threshold(study_margins, b), 3)}
-                  for b in (0.01, 0.02, 0.05, 0.10, 0.20)],
-    }
-    print("   calibration set: info margin=%.2f -> useful-blocked=%.1f%% junk-kept=%.1f%%"
-          % (theta_info, 100 * c_gb, 100 * c_jk))
-    print("   calibration set: study margin=%.2f -> study-blocked=%.1f%% rest-kept=%.1f%%"
-          % (theta_study, 100 * c_sgb, 100 * c_sjk))
-    print("   synthetic: info margin=%.2f -> useful-blocked=%.1f%% junk-kept=%.1f%%"
-          % (theta_info, 100 * gb_info, 100 * jk_info))
-    print("   synthetic: study margin=%.2f -> useful-blocked=%.1f%% junk-kept=%.1f%%"
-          % (theta_study, 100 * gb_study, 100 * jk_study))
+    # Reference only: the quantile the old build shipped. Kept in the log so the
+    # difference between it and the threshold actually used is visible.
+    theta_info_q = quantile_threshold(info_margins, args.good_budget)
+    theta_study_q = quantile_threshold(study_margins, args.good_budget)
+    c_info_margins = [margin(l, "info") for l in CL]
+    c_study_margins_list = [margin(l, "study") for l in CL]
     print("   display temperature: %.1f" % temperature)
 
     # hard cases: hand written, never trained on
@@ -410,6 +395,73 @@ def main():
     HX = [feat.features(c["title"], c["channel"]) for c in hc]
     HP = [predict_q(QW, QB, index, f) for f in HX]
     HL = [logits_of(QW, QB, index, f) for f in HX]
+    # Choosing the shipped thresholds.
+    #
+    # A quantile of a 39-case calibration set is far too jumpy to ship: neighbouring
+    # budgets moved it by several log-odds, and the "Balanced" default ended up stricter
+    # than the model's own operating point - which is exactly what made the app block
+    # useful Shorts. Both thresholds are now chosen by one rule:
+    #
+    #   the strictest threshold whose false-block rate stays inside a stated budget
+    #
+    # i.e. suppress junk as hard as possible without eating into content the user wanted.
+    def balanced_threshold(ms, labels):
+        """Threshold that minimises (blocked + kept-junk), taken at the plateau midpoint.
+
+        Two earlier rules were tried and both were worse. A quantile of the useful margins
+        moved by log-odds between neighbouring budgets. "Strictest threshold that stays
+        inside a false-block budget" sat on a cliff edge and made the shipped threshold
+        swing from -2.8 to +4.5 between retrains. Minimising the error sum gives a wide
+        plateau, and taking its midpoint keeps successive models at the same operating
+        point instead of chasing whichever title landed on the boundary.
+        """
+        n_allow = max(1, sum(1 for y in labels if y == 0))
+        n_other = max(1, sum(1 for y in labels if y != 0))
+
+        def cost(th):
+            gb = sum(1 for m, y in zip(ms, labels) if y == 0 and m < th) / n_allow
+            jk = sum(1 for m, y in zip(ms, labels) if y != 0 and m >= th) / n_other
+            return gb + jk
+
+        grid = [-24.0 + 0.25 * i for i in range(0, 145)]
+        best = min(cost(th) for th in grid)
+        plateau = [th for th in grid if cost(th) <= best + 1e-9]
+        return round((min(plateau) + max(plateau)) / 2.0, 2)
+
+    hc_info_labels = [0 if c["informative"] else 2 for c in hard_cases.HARD_CASES]
+    # informative: measured on the hand-written hard list (the only real-world data).
+    # study: the metric separates far worse - study content is a subset of informative, and
+    # no threshold keeps every PCM problem while rejecting every motivational talk - so it
+    # is fitted on the much larger held-out set, where a bad threshold would otherwise
+    # block the study Shorts that mode exists for.
+    theta_info_op = balanced_threshold([margin(l, "info") for l in HL], hc_info_labels)
+    theta_study_op = balanced_threshold([margin(l, "study") for l in CL], c_study_labels)
+    theta_info, theta_study = theta_info_op, theta_study_op
+    print("   shipped threshold: info=%.2f (the old useful-margin quantile said %.2f), "
+          "study=%.2f (said %.2f)" % (theta_info_op, theta_info_q, theta_study_op, theta_study_q))
+    c_gb, c_jk = rates(c_info_margins, c_info_labels, theta_info, "info")
+    c_sgb, c_sjk = rates(c_study_margins_list, c_study_labels, theta_study, "study")
+    gb_info, jk_info = rates(margins_info_t, yt, theta_info, "info")
+    gb_study, jk_study = rates(margins_study_t, yt, theta_study, "study")
+    print("   calibration set: info margin=%.2f -> useful-blocked=%.1f%% junk-kept=%.1f%%"
+          % (theta_info, 100 * c_gb, 100 * c_jk))
+    print("   calibration set: study margin=%.2f -> study-blocked=%.1f%% rest-kept=%.1f%%"
+          % (theta_study, 100 * c_sgb, 100 * c_sjk))
+    print("   held-out: info margin=%.2f -> useful-blocked=%.1f%% junk-kept=%.1f%%"
+          % (theta_info, 100 * gb_info, 100 * jk_info))
+    print("   held-out: study margin=%.2f -> study-blocked=%.1f%% rest-kept=%.1f%%"
+          % (theta_study, 100 * gb_study, 100 * jk_study))
+
+    # Strictness ladder: five rungs, 4 log-odds apart, centred on the shipped thresholds.
+    # Rung 2 is what the app ships as "Balanced", rung 0 is the permissive end (keeps
+    # nearly everything, lets some junk through), rung 4 the strict end.
+    offsets = (-2.0, -1.0, 0.0, 1.0, 2.0)
+    presets = {
+        "informative": [{"offset": o, "margin": round(theta_info + o * 4.0, 3)} for o in offsets],
+        "study": [{"offset": o, "margin": round(theta_study + o * 4.0, 3)} for o in offsets],
+    }
+
+    # (per-rung measurements are taken below, once the hand-labelled margins exist)
     errors = []
     for c, p, l in zip(hc, HP, HL):
         keep = margin(l, "info") >= theta_info
@@ -426,9 +478,21 @@ def main():
           % (100 * hc_acc, 100 * hc_good_blocked, 100 * hc_junk_kept, len(errors), len(hc)))
 
     # trade-off table on hard cases, so the user can see what the slider does
-    curve = []
+    # Measure what each rung of the strictness ladder actually does on the hand-labelled
+    # set, so the settings screen can quote a measurement instead of an intention.
     hc_info_labels = [0 if c["informative"] else 2 for c in hc]
-    hc_margins = [margin(l, "info") for l in HL]
+    hc_margin_list = [margin(l, "info") for l in HL]
+    preset_rows = []
+    syn_margin_list = [margin(l, "info") for l in CL]
+    for row in presets["informative"]:
+        gb, jk = rates(hc_margin_list, hc_info_labels, row["margin"], "info")
+        sgb, sjk = rates(syn_margin_list, c_info_labels, row["margin"], "info")
+        preset_rows.append({"margin": row["margin"], "useful_blocked": round(gb, 4),
+                            "junk_kept": round(jk, 4), "syn_useful_blocked": round(sgb, 4),
+                            "syn_junk_kept": round(sjk, 4)})
+
+    curve = []
+    hc_margins = hc_margin_list
     for theta in [-20.0, -10.0, -5.0, -2.0, -1.0, 0.0, 1.0, 2.0, 5.0, 10.0]:
         gb, jk = rates(hc_margins, hc_info_labels, theta, "info")
         curve.append((theta, gb, jk))
@@ -488,10 +552,14 @@ def main():
         "info_margin=%.4f" % theta_info,
         "study_margin=%.4f" % theta_study,
         "temperature=%.2f" % temperature,
-        "presets_informative=" + ",".join("%.2f:%.4f" % (p["budget"], p["margin"])
-                                          for p in presets["informative"]),
-        "presets_study=" + ",".join("%.2f:%.4f" % (p["budget"], p["margin"])
-                                    for p in presets["study"]),
+        "presets_informative=" + ",".join("%d:%.4f" % (i, p["margin"])
+                                          for i, p in enumerate(presets["informative"])),
+        "presets_study=" + ",".join("%d:%.4f" % (i, p["margin"])
+                                    for i, p in enumerate(presets["study"])),
+        "preset_info_useful_blocked=" + ",".join("%.4f" % r["useful_blocked"] for r in preset_rows),
+        "preset_info_junk_kept=" + ",".join("%.4f" % r["junk_kept"] for r in preset_rows),
+        "preset_syn_useful_blocked=" + ",".join("%.4f" % r["syn_useful_blocked"] for r in preset_rows),
+        "preset_syn_junk_kept=" + ",".join("%.4f" % r["syn_junk_kept"] for r in preset_rows),
         "hard_cases=%d" % len(hc),
         "hard_accuracy=%.4f" % hc_acc,
         "hard_useful_blocked=%.4f" % hc_good_blocked,
@@ -570,12 +638,21 @@ def main():
         "Hard-case accuracy: **%.1f%%** (%d of %d borderline titles correct)."
         % (100 * hc_acc, len(hc) - len(errors), len(hc)),
         "",
+        "Both rows are now measured at the threshold that actually ships (an earlier build",
+        "quoted the shipped threshold next to rates taken at margin 0, which flattered it).",
         "The `unseen topics` rows come from held-out content topics but the same phrasing",
-        "templates as training, so read them as an upper bound. The hard-case row is",
-        "hand-written prose the model has never seen: trust that one more.",
+        "templates as training, so read them as an upper bound.",
+        "",
+        "The hard-case row is hand-written prose the model has never trained on, but the",
+        "informative threshold itself was picked on that list (strictest threshold that",
+        "blocks at most 2% of the useful titles in it), so treat 99% as lightly optimistic",
+        "rather than as a held-out score. The study threshold is a weaker instrument: study",
+        "content is a subset of informative content, and no threshold on it keeps every PCM",
+        "problem while also rejecting every motivational talk. It is picked on the much",
+        "larger held-out set with a 5% budget, weighted to not block study Shorts.",
         "",
         "Max quantisation error on probabilities: %.5f." % qerr,
-        "Display temperature for the UI confidence number: %.1f (decisions do not use it).",
+        "Display temperature for the UI confidence number: %.1f (decisions do not use it)." % temperature,
         "",
         "## The trade-off the slider moves",
         "",

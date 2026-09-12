@@ -8,6 +8,7 @@ import android.os.Looper
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import com.shortsense.DebugLog
+import com.shortsense.DecisionLog
 import com.shortsense.R
 import com.shortsense.Settings
 import com.shortsense.nlp.Classifier
@@ -55,6 +56,12 @@ class ShortsWatcherService : AccessibilityService() {
         private const val RETRY_MS = 250L
         private const val MAX_RETRIES = 3
         private const val MAX_BLOCKS_PER_MINUTE = 25
+
+        /** "Learn from my taps": keeps on the same channel before it is allow-listed. */
+        private const val LEARN_AFTER_KEEPS = 3
+
+        /** How long a confirmation stays on the block screen before it acts. */
+        private const val CONFIRM_MS = 1100L
     }
 
     private lateinit var settings: Settings
@@ -216,6 +223,10 @@ class ShortsWatcherService : AccessibilityService() {
             // like flicker. Only a Short that was read and judged keepable clears it.
             if (!verdict.unknown || overlay?.isShowing() != true) dismissOverlay()
             if (!verdict.unknown) settings.countAllowed()
+            DecisionLog.add(
+                if (verdict.unknown) DecisionLog.Kind.UNKNOWN else DecisionLog.Kind.KEEP,
+                surface.title, surface.channel, verdict.margin, verdict.threshold
+            )
             if (settings.debugLogging) {
                 DebugLog.add(if (verdict.unknown) "unknown" else "keep", "$where :: ${verdict.reason}")
             }
@@ -244,6 +255,9 @@ class ShortsWatcherService : AccessibilityService() {
         }
 
         settings.countBlocked()
+        DecisionLog.add(
+            DecisionLog.Kind.BLOCK, surface.title, surface.channel, verdict.margin, verdict.threshold
+        )
         if (settings.debugLogging) {
             val extra = if (exitFailed) " (no countdown: the last exit did not take)" else ""
             DebugLog.add("block", "$where :: ${verdict.reason}$extra")
@@ -280,17 +294,54 @@ class ShortsWatcherService : AccessibilityService() {
             callbacks = object : BlockOverlay.Callbacks {
                 override fun onKeep() {
                     policy.onUserKept(key, System.currentTimeMillis())
+                    DecisionLog.add(DecisionLog.Kind.USER_KEEP, title, channel, verdict.margin, verdict.threshold)
                     DebugLog.add("user", "kept it: '${title.take(50)}'")
+                    // "Learn from my taps": enough keeps on the same channel and it is allowed.
+                    if (settings.learnChannels && channel.isNotBlank()) {
+                        val times = settings.bumpKeep(channel)
+                        if (times >= LEARN_AFTER_KEEPS) {
+                            settings.addChannel("allow", channel)
+                            overlay?.say(getString(R.string.learned_channel, channel, times))
+                            DebugLog.add("user", "learned to allow '$channel' after $times keeps")
+                            handler.postDelayed({ dismissOverlay() }, CONFIRM_MS)
+                            return
+                        }
+                        DebugLog.add("user", "kept '$channel' ($times/$LEARN_AFTER_KEEPS towards auto-allow)")
+                    }
                     dismissOverlay()
                 }
 
                 override fun onAlwaysAllow() {
                     policy.onUserKept(key, System.currentTimeMillis())
-                    if (settings.learnChannels && channel.isNotBlank()) {
-                        settings.addChannel("allow", channel)
-                        DebugLog.add("user", "always allowing '$channel'")
+                    if (channel.isBlank()) {
+                        // no silent no-op: say what happened and keep the Short
+                        overlay?.say(getString(R.string.no_channel_read))
+                        DebugLog.add("warn", "allow tapped but no channel was read")
+                        handler.postDelayed({ dismissOverlay() }, CONFIRM_MS)
+                        return
                     }
-                    dismissOverlay()
+                    settings.addChannel("allow", channel)
+                    DecisionLog.add(DecisionLog.Kind.USER_ALLOW, title, channel, verdict.margin, verdict.threshold)
+                    DebugLog.add("user", "always allowing '$channel'")
+                    overlay?.say(getString(R.string.allow_added, channel))
+                    handler.postDelayed({ dismissOverlay() }, CONFIRM_MS)
+                }
+
+                override fun onNeverShow() {
+                    policy.onUserKept(key, System.currentTimeMillis())
+                    if (channel.isBlank()) {
+                        overlay?.say(getString(R.string.no_channel_read))
+                        handler.postDelayed({ dismissOverlay() }, CONFIRM_MS)
+                        return
+                    }
+                    settings.addChannel("block", channel)
+                    DecisionLog.add(DecisionLog.Kind.USER_BLOCK, title, channel, verdict.margin, verdict.threshold)
+                    DebugLog.add("user", "never showing '$channel'")
+                    overlay?.say(getString(R.string.block_added, channel))
+                    // they do not want this one: move on once the confirmation has been read
+                    handler.postDelayed({
+                        if (settings.skipOnTimeout) skipToNextShort() else leaveShorts()
+                    }, CONFIRM_MS)
                 }
 
                 override fun onLeaveNow() {

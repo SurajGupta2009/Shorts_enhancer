@@ -52,8 +52,11 @@ class DebugActivity : Activity() {
         }
         findViewById<Button>(R.id.clearLog).setOnClickListener {
             DebugLog.clear()
+            DecisionLog.clear()
             reload()
         }
+        findViewById<Button>(R.id.exportLog).setOnClickListener { exportLog() }
+        findViewById<Button>(R.id.copyLog).setOnClickListener { copyLog() }
         reload()
     }
 
@@ -66,6 +69,38 @@ class DebugActivity : Activity() {
         adapter.clear()
         adapter.addAll(DebugLog.snapshot().map { it.render() })
         adapter.notifyDataSetChanged()
+        findViewById<TextView>(R.id.decisionSummary).text = getString(
+            R.string.decision_summary,
+            DecisionLog.size(),
+            DecisionLog.count(DecisionLog.Kind.BLOCK),
+            DecisionLog.count(DecisionLog.Kind.KEEP) + DecisionLog.count(DecisionLog.Kind.UNKNOWN),
+            DecisionLog.count(DecisionLog.Kind.USER_KEEP) +
+                DecisionLog.count(DecisionLog.Kind.USER_ALLOW) +
+                DecisionLog.count(DecisionLog.Kind.USER_BLOCK)
+        )
+    }
+
+    /** Writes the report, then opens the share sheet; nothing is uploaded by this app. */
+    private fun exportLog() {
+        val summary = findViewById<TextView>(R.id.decisionSummary)
+        try {
+            val report = LogExporter.build(this)
+            summary.text = getString(R.string.export_done, report.decisions, report.blocked, report.kept)
+            DebugLog.add("info", "exported ${report.file.name}")
+            LogExporter.share(this, report)
+        } catch (t: Throwable) {
+            summary.text = getString(R.string.export_failed, t.message ?: t.toString())
+        }
+        reload()
+    }
+
+    private fun copyLog() {
+        val clipboard = getSystemService(android.content.Context.CLIPBOARD_SERVICE)
+            as android.content.ClipboardManager
+        clipboard.setPrimaryClip(
+            android.content.ClipData.newPlainText("ShortsSense log", LogExporter.report(this, Settings(this)))
+        )
+        findViewById<TextView>(R.id.decisionSummary).text = "Copied to the clipboard."
     }
 
     private fun runClassifierTest() {

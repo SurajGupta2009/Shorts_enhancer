@@ -1,28 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  Adaptive icon foreground: a shield (the filtering) with a play mark cut into it (the
-  video). Two shapes, high contrast, so it survives being drawn at 48dp in a launcher.
-
-  Everything sits inside the central 72x72 of the 108x108 viewport, which is the safe zone
-  every launcher mask (circle, squircle, teardrop) is guaranteed to keep.
--->
+<!-- The icon motif for use inside the app (header, buttons). Same shapes, flat colours. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="108dp"
-    android:height="108dp"
+    android:width="48dp"
+    android:height="48dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-
-    <!-- the shield, softer than a pure polygon by way of the curved lower half -->
     <path
         android:pathData="M54,23.5 L81,34.2 V54 C81,67.4 69.4,78.1 54,84.5 C38.6,78.1 27,67.4 27,54 V34.2 Z"
         android:fillColor="#FFF2F6FC" />
-
-    <!-- the play mark, in the dark background colour -->
     <path
         android:pathData="M46.4,40.6 L66,52.4 L46.4,64.2 Z"
         android:fillColor="#FF0D1526" />
-
-    <!-- a spark: the thing worth keeping -->
     <path
         android:pathData="M54,29.4 L56.1,33.6 L60.4,35.7 L56.1,37.8 L54,42 L51.9,37.8 L47.6,35.7 L51.9,33.6 Z"
         android:fillColor="#FF2EE6A9" />

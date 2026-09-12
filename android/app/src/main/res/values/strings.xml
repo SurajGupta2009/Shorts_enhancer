@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ShortsSense</string>
+    <string name="app_tagline">Keeps the Shorts that teach you something, covers the rest</string>
     <string name="debug_title">Detection log</string>
     <string name="service_label">ShortsSense</string>
     <string name="service_summary">Keeps useful Shorts, blocks the rest</string>
@@ -43,6 +44,13 @@
     <string name="stats_fmt">Blocked %1$d · Let through %2$d</string>
     <string name="reset_stats">Reset counters</string>
 
+    <string name="decision_summary">%1$d decisions in memory: %2$d blocked, %3$d kept, %4$d of them your taps</string>
+    <string name="export_log">Export log</string>
+    <string name="export_log_sub">Writes a text file with your settings, the model, every decision and the raw log, then opens the share sheet. Nothing is uploaded by the app.</string>
+    <string name="copy_log">Copy log</string>
+    <string name="export_provider_label">ShortsSense exports</string>
+    <string name="export_done">%1$d decisions exported (%2$d blocked, %3$d kept)</string>
+    <string name="export_failed">Could not write the file: %1$s</string>
     <string name="debug_open">Detection log &amp; classifier test</string>
     <string name="debug_logging">Record a detection log</string>
 
@@ -54,9 +62,14 @@
     <string name="blocked_reason_fmt">Read as: %1$s</string>
     <string name="blocked_keep">Keep watching anyway</string>
     <string name="blocked_allow">Always allow this channel</string>
+    <string name="blocked_never">Never this channel</string>
     <string name="blocked_exit">Take me out</string>
     <string name="blocked_countdown_fmt">Closing in %1$d…</string>
     <string name="blocked_countdown_skip_fmt">Skipping in %1$d…</string>
     <string name="blocked_unknown">Could not read the title</string>
+    <string name="allow_added">Always keeping @%1$s from now on</string>
+    <string name="block_added">@%1$s will always be blocked from now on</string>
+    <string name="no_channel_read">Could not read the channel on this Short</string>
+    <string name="learned_channel">Learned: you kept @%1$s %2$d times, so it is now always allowed</string>
     <string name="blocked_exit_failed">Leaving Shorts did not work last time, so this screen will wait for you — tap \'Take me out\' when you are ready.</string>
 </resources>

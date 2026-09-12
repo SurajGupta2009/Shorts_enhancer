@@ -11,34 +11,75 @@
         android:paddingTop="12dp"
         android:paddingBottom="28dp">
 
-        <!-- ============ status ============ -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/Card" android:orientation="vertical">
-            <TextView
-                android:id="@+id/statusTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="19sp"
-                android:textStyle="bold"
-                android:textColor="@color/text"
-                android:text="@string/status_off" />
-            <TextView
-                android:id="@+id/statusHint"
-                style="@style/Muted"
+        <!-- ============ banner ============ -->
+        <LinearLayout style="@style/Header" android:orientation="vertical">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="4dp"
-                android:text="@string/status_hint_off" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:id="@+id/logo"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:src="@drawable/ic_logo"
+                    android:contentDescription="@null" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:paddingStart="12dp">
+
+                    <TextView
+                        style="@style/HeaderTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/app_name" />
+
+                    <TextView
+                        style="@style/HeaderSub"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="2dp"
+                        android:text="@string/app_tagline" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingTop="14dp">
+
+                <TextView
+                    android:id="@+id/statusTitle"
+                    style="@style/StatusPill"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/statusHint"
+                    style="@style/HeaderSub"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingStart="10dp" />
+            </LinearLayout>
+
             <Button
                 android:id="@+id/openSettings"
+                style="@style/Action"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="12dp"
                 android:text="@string/open_accessibility"
-                android:backgroundTint="@color/accent"
-                android:textColor="@android:color/white" />
+                android:backgroundTint="@color/accent_bright"
+                android:textColor="@color/primary_dark" />
         </LinearLayout>
 
         <!-- ============ mode ============ -->
@@ -162,6 +203,7 @@
                     android:inputType="text"
                     android:importantForAutofill="no" />
                 <Button
+                    style="@style/Action"
                     android:id="@+id/addAllowChannel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -194,6 +236,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="16sp" />
             <Button
+                style="@style/Action"
                 android:id="@+id/resetStats"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -213,11 +256,19 @@
                 android:text="@string/debug_logging"
                 android:textColor="@color/text" />
             <Button
+                style="@style/Action"
                 android:id="@+id/openDebug"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="@string/debug_open" />
+            <Button
+                style="@style/Action"
+                android:id="@+id/exportFromMain"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/export_log" />
         </LinearLayout>
 
         <!-- ============ about ============ -->
