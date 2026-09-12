@@ -149,20 +149,7 @@ jobs:
           git add -f ci-logs/last-run.md
           git commit -m "ci: record run $GITHUB_RUN_NUMBER" || echo "nothing to commit"
           git push --force origin ci-logs
-          import glob, xml.etree.ElementTree as ET
-          total = failed = skipped = 0
-          names = []
-          for f in glob.glob("android/app/build/test-results/testDebugUnitTest/*.xml"):
-              r = ET.parse(f).getroot()
-              total += int(r.get("tests", 0)); failed += int(r.get("failures", 0)) + int(r.get("errors", 0))
-              skipped += int(r.get("skipped", 0))
-              names.append(r.get("name", "").split(".")[-1])
-          if not total:
-              print("### Unit tests\n\nNo test results were produced.")
-          else:
-              print("### Unit tests: %d passed, %d failed, %d skipped" % (total - failed - skipped, failed, skipped))
-              print()
-              print("`%s`" % "`, `".join(sorted(n for n in names if n)))
+
           EOF
 
       # A debug APK that built but did not package the model would install and then
