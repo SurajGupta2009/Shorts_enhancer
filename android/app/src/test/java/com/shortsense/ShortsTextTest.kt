@@ -44,8 +44,8 @@ class ShortsTextTest {
 
     @Test
     fun `a soundtrack is not a channel`() {
-        assertTrue(kinds("Boom Shaka · KR$NA & Dhanda Nyoliwala").isEmpty())
-        assertTrue(ShortsText.isSoundRow("Boom Shaka · KR$NA & Dhanda Nyoliwala"))
+        assertTrue(kinds("Boom Shaka · KR\$NA & Dhanda Nyoliwala").isEmpty())
+        assertTrue(ShortsText.isSoundRow("Boom Shaka · KR\$NA & Dhanda Nyoliwala"))
         assertTrue(kinds("original sound - Arijit Singh").isEmpty())
         // the one legitimate bullet row on YouTube: the channel, not a soundtrack
         assertFalse(ShortsText.isSoundRow("Channel Name · Subscribe"))
