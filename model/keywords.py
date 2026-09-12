@@ -132,6 +132,8 @@ EDU_CHANNEL_WORDS = [
     "tutorials", "tutorial", "lessons", "lesson", "masterclass", "smp", "facts", "fact",
     "explainer", "explained", "knowledge", "info", "infopedia", "curious", "research",
     "lab", "physicswallah", "unacademy", "vedantu", "byjus", "drishti", "adda247",
+    "neetprep", "aakash", "toppr", "doubtnut", "learnohub", "magnetbrains", "examfear",
+    "wallah", "sarrthi", "vajiram", "campusx", "striver", "neetcode", "apnacollege",
     "kitchen", "recipes", "recipe", "cooking", "chef", "baking", "guitar", "piano",
     "musiclessons", "fitness", "workout", "yoga", "gym", "nutrition", "health",
     "finance", "varsity", "investing", "invest", "money", "tax", "legal", "law",

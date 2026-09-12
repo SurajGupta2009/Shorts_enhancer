@@ -1,8 +1,9 @@
 package com.shortsense.nlp
 
 import android.content.Context
-import java.io.DataInputStream
 import java.io.InputStream
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import kotlin.math.exp
 import kotlin.math.ln
 import kotlin.math.max
@@ -107,29 +108,33 @@ class TinyModel private constructor(
             context.assets.open(ASSET_NAME).use { load(it) }
 
         fun load(stream: InputStream): TinyModel {
-            val input = DataInputStream(stream.buffered())
+            // The file is little endian (written by Python's struct.pack("<...")).
+            // DataInputStream would read it big endian and produce nonsense, so read the
+            // bytes and use an explicitly ordered buffer instead.
+            val bytes = stream.readBytes()
+            val buf = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
             val magic = ByteArray(4)
-            input.readFully(magic)
+            buf.get(magic)
             require(String(magic, Charsets.US_ASCII) == MAGIC) { "not a ShortsSense model file" }
-            val version = input.readUnsignedShort()
+            val version = buf.short.toInt()
             require(version == 1) { "unsupported model version $version" }
-            val classes = input.readUnsignedShort()
+            val classes = buf.short.toInt()
             require(classes == 3) { "unsupported class count $classes" }
-            val bias = intArrayOf(input.readInt(), input.readInt(), input.readInt())
-            val scale = input.readInt()
-            val count = input.readInt()
+            val bias = intArrayOf(buf.int, buf.int, buf.int)
+            val scale = buf.int
+            val count = buf.int
+            require(count > 0 && count < 5_000_000) { "implausible feature count $count" }
             val index = HashMap<String, Int>(count * 2)
             val weights = ShortArray(count * 3)
-            val keyBytes = ByteArray(256)
             for (i in 0 until count) {
-                val keyLen = input.readUnsignedByte()
-                input.readFully(keyBytes, 0, keyLen)
-                val key = String(keyBytes, 0, keyLen, Charsets.UTF_8)
+                val keyLen = buf.get().toInt() and 0xFF
+                val key = String(bytes, buf.position(), keyLen, Charsets.UTF_8)
+                buf.position(buf.position() + keyLen)
                 index[key] = i
                 val base = i * 3
-                weights[base] = input.readShort()
-                weights[base + 1] = input.readShort()
-                weights[base + 2] = input.readShort()
+                weights[base] = buf.short
+                weights[base + 1] = buf.short
+                weights[base + 2] = buf.short
             }
             return TinyModel(bias, scale, index, weights, count)
         }

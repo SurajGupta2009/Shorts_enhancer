@@ -14,11 +14,11 @@ latency you can feel.
 
 | setting | threshold (margin) | useful content blocked | junk let through |
 |---|---|---|---|
-| unseen topics, informative mode | -6.89 | 0.9% | 3.8% |
-| unseen topics, study-only mode | -4.16 | 21.0% | 9.0% |
-| hand-written hard cases | -6.89 | 2.0% | 3.4% |
+| unseen topics, informative mode | -4.12 | 0.7% | 3.5% |
+| unseen topics, study-only mode | -2.98 | 20.9% | 9.1% |
+| hand-written hard cases | -4.12 | 4.1% | 1.7% |
 
-Hard-case accuracy: **97.5%** (153 of 157 borderline titles correct).
+Hard-case accuracy: **96.8%** (152 of 157 borderline titles correct).
 
 The `unseen topics` rows come from held-out content topics but the same phrasing
 templates as training, so read them as an upper bound. The hard-case row is
@@ -33,24 +33,25 @@ Margins are log-odds in favour of keeping a Short. Higher = stricter.
 
 | margin | useful content blocked | junk let through |
 |---|---|---|
-| -4.00 | 3.1% | 1.7% |
-| -2.00 | 5.1% | 1.7% |
-| -1.00 | 5.1% | 1.7% |
-| -0.50 | 5.1% | 1.7% |
-| 0.00 | 5.1% | 1.7% |
-| 0.50 | 5.1% | 1.7% |
-| 1.00 | 5.1% | 1.7% |
+| -4.00 | 4.1% | 1.7% |
+| -2.00 | 6.1% | 1.7% |
+| -1.00 | 6.1% | 1.7% |
+| -0.50 | 6.1% | 1.7% |
+| 0.00 | 6.1% | 0.0% |
+| 0.50 | 6.1% | 0.0% |
+| 1.00 | 6.1% | 0.0% |
 | 2.00 | 6.1% | 0.0% |
-| 4.00 | 10.2% | 0.0% |
-| 8.00 | 17.3% | 0.0% |
+| 4.00 | 9.2% | 0.0% |
+| 8.00 | 16.3% | 0.0% |
 
 ## Mistakes on the hard cases (the honest list)
 
 | title | channel | model said | truth | P(info) |
 |---|---|---|---|---|
-| outfit of the day 💅 | Fashion Lookbook | keep | entertainment | 0.00 |
-| roast of the year 😂 | Roast Central | keep | entertainment | 0.76 |
+| James Webb telescope just found something strange | NASA Goddard | block | informative | 0.00 |
+| roast of the year 😂 | Roast Central | keep | entertainment | 0.46 |
 | how to edit reels like a pro | Skillshare Sessions | block | informative | 0.00 |
+| cricket bowling action analysis — biomechanics | Sports Science Lab | block | informative | 0.00 |
 | instagram reels editing transition tutorial | Peter McKinnon | block | informative | 0.00 |
 
 ## Reproduce

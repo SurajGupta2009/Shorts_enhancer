@@ -9,52 +9,52 @@
   "features": 20000,
   "scale": 4096,
   "thresholds": {
-    "info_margin": -6.888,
-    "study_margin": -4.162,
+    "info_margin": -4.12,
+    "study_margin": -2.983,
     "temperature": 5.9,
     "presets": {
       "informative": [
         {
           "budget": 0.01,
-          "margin": -11.787
+          "margin": -11.584
         },
         {
           "budget": 0.02,
-          "margin": -11.379
+          "margin": -10.74
         },
         {
           "budget": 0.05,
-          "margin": -4.916
+          "margin": -2.322
         },
         {
           "budget": 0.1,
-          "margin": 0.4
+          "margin": -0.504
         },
         {
           "budget": 0.2,
-          "margin": 4.265
+          "margin": 5.034
         }
       ],
       "study": [
         {
           "budget": 0.01,
-          "margin": -11.692
+          "margin": -8.516
         },
         {
           "budget": 0.02,
-          "margin": -8.977
+          "margin": -6.452
         },
         {
           "budget": 0.05,
-          "margin": -2.88
+          "margin": -2.457
         },
         {
           "budget": 0.1,
-          "margin": 0.717
+          "margin": -0.718
         },
         {
           "budget": 0.2,
-          "margin": 3.325
+          "margin": 2.846
         }
       ]
     }
@@ -62,21 +62,21 @@
   "metrics": {
     "synthetic_unseen_topics": {
       "info_mode": {
-        "theta": -6.888336328229496,
-        "useful_blocked": 0.0094,
-        "junk_kept": 0.0385
+        "theta": -4.1199345251798904,
+        "useful_blocked": 0.0073,
+        "junk_kept": 0.0348
       },
       "study_mode": {
-        "theta": -4.16240236659544,
-        "useful_blocked": 0.2099,
-        "junk_kept": 0.0896
+        "theta": -2.9826279504876667,
+        "useful_blocked": 0.2088,
+        "junk_kept": 0.0907
       }
     },
     "hard_cases": {
       "n": 157,
-      "accuracy": 0.9745,
-      "useful_blocked": 0.0204,
-      "junk_kept": 0.0339
+      "accuracy": 0.9682,
+      "useful_blocked": 0.0408,
+      "junk_kept": 0.0169
     },
     "max_quantisation_error": 0.0
   },
