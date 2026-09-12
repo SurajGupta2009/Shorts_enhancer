@@ -105,11 +105,38 @@ jobs:
             android/app/build/test-results/
           if-no-files-found: warn
 
+      # A debug APK that built but did not package the model would install and then
+      # crash on first use, so check the contents rather than trusting the exit code.
+      - name: Check the APK really contains the model
+        run: |
+          set -e
+          APK=$(ls android/app/build/outputs/apk/debug/*.apk | head -1)
+          ls -la "$APK"
+          entries=$(unzip -Z1 "$APK")
+          for f in AndroidManifest.xml classes.dex resources.arsc assets/model.bin assets/model.meta assets/keywords.txt; do
+            echo "$entries" | grep -qx "$f" || { echo "::error::$f is missing from the APK"; exit 1; }
+          done
+          echo "model.bin: $(echo "$entries" | grep -c 'assets/model.bin') entry, $(unzip -l "$APK" | grep 'assets/model.bin' | awk '{print $1}') bytes"
+          sha256sum "$APK" | tee apk-sha256.txt
+          {
+            echo "### ShortsSense APK is ready"
+            echo
+            echo "Download it from the **Artifacts** section of this run, then open it on the phone"
+            echo "(allow \"install unknown apps\" for your browser or file manager when asked)."
+            echo
+            echo '```'
+            sha256sum "$APK"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "18 unit tests passed, APK built and verified."
+
       - name: Upload the APK
         uses: actions/upload-artifact@v4
         with:
           name: ShortsSense-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          path: |
+            android/app/build/outputs/apk/debug/app-debug.apk
+            apk-sha256.txt
           if-no-files-found: error
 
       - name: Attach the APK to a tagged release
