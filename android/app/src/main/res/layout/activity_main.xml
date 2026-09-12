@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="12dp"
+        android:paddingBottom="28dp">
+
+        <!-- ============ status ============ -->
+        <LinearLayout style="@style/Card" android:orientation="vertical">
+            <TextView
+                android:id="@+id/statusTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="19sp"
+                android:textStyle="bold"
+                android:textColor="@color/text"
+                android:text="@string/status_off" />
+            <TextView
+                android:id="@+id/statusHint"
+                style="@style/Muted"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:text="@string/status_hint_off" />
+            <Button
+                android:id="@+id/openSettings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/open_accessibility"
+                android:backgroundTint="@color/accent"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+
+        <!-- ============ mode ============ -->
+        <LinearLayout style="@style/Card" android:orientation="vertical">
+            <TextView style="@style/SectionTitle" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:text="@string/section_mode" />
+            <RadioGroup
+                android:id="@+id/modeGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <RadioButton
+                    android:id="@+id/modeInformative"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/mode_informative"
+                    android:textColor="@color/text" />
+                <TextView style="@style/Muted" android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="34dp" android:paddingBottom="8dp"
+                    android:text="@string/mode_informative_sub" />
+                <RadioButton
+                    android:id="@+id/modeStudy"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/mode_study"
+                    android:textColor="@color/text" />
+                <TextView style="@style/Muted" android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="34dp"
+                    android:text="@string/mode_study_sub" />
+            </RadioGroup>
+        </LinearLayout>
+
+        <!-- ============ strictness ============ -->
+        <LinearLayout style="@style/Card" android:orientation="vertical">
+            <TextView style="@style/SectionTitle" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:text="@string/section_strictness" />
+            <TextView
+                android:id="@+id/strictnessLabel"
+                style="@style/Body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold" />
+            <SeekBar
+                android:id="@+id/strictness"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="4"
+                android:paddingTop="6dp" />
+            <TextView
+                android:id="@+id/strictnessExplain"
+                style="@style/Muted"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <TextView style="@style/Muted" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:paddingTop="6dp"
+                android:text="@string/strictness_hint" />
+        </LinearLayout>
+
+        <!-- ============ action ============ -->
+        <LinearLayout style="@style/Card" android:orientation="vertical">
+            <TextView style="@style/SectionTitle" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:text="@string/section_action" />
+            <Switch
+                android:id="@+id/switchSkip"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/action_skip"
+                android:textColor="@color/text" />
+            <TextView style="@style/Muted" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:paddingBottom="10dp"
+                android:text="@string/action_skip_sub" />
+            <TextView
+                android:id="@+id/countdownLabel"
+                style="@style/Body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold" />
+            <SeekBar
+                android:id="@+id/countdown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="10" />
+        </LinearLayout>
+
+        <!-- ============ channels ============ -->
+        <LinearLayout style="@style/Card" android:orientation="vertical">
+            <TextView style="@style/SectionTitle" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:text="@string/section_channels" />
+            <Switch
+                android:id="@+id/switchLearn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/learn_channels"
+                android:textColor="@color/text" />
+            <TextView style="@style/Muted" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:paddingBottom="8dp"
+                android:text="@string/learn_channels_sub" />
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:gravity="center_vertical">
+                <EditText
+                    android:id="@+id/newAllowChannel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="@string/allowlist_hint"
+                    android:inputType="text"
+                    android:importantForAutofill="no" />
+                <Button
+                    android:id="@+id/addAllowChannel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/add" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/allowListBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+            <TextView
+                android:id="@+id/allowEmpty"
+                style="@style/Muted"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="6dp" />
+        </LinearLayout>
+
+        <!-- ============ stats ============ -->
+        <LinearLayout style="@style/Card" android:orientation="vertical">
+            <TextView style="@style/SectionTitle" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:text="@string/section_stats" />
+            <TextView
+                android:id="@+id/statsLine"
+                style="@style/Body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp" />
+            <Button
+                android:id="@+id/resetStats"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/reset_stats" />
+        </LinearLayout>
+
+        <!-- ============ tools ============ -->
+        <LinearLayout style="@style/Card" android:orientation="vertical">
+            <Switch
+                android:id="@+id/switchDebug"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/debug_logging"
+                android:textColor="@color/text" />
+            <Button
+                android:id="@+id/openDebug"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/debug_open" />
+        </LinearLayout>
+
+        <!-- ============ about ============ -->
+        <LinearLayout style="@style/Card" android:orientation="vertical">
+            <TextView style="@style/SectionTitle" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:text="@string/section_about" />
+            <TextView
+                android:id="@+id/aboutBody"
+                style="@style/Body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/about_body" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

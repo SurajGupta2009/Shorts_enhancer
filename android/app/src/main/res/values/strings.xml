@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ShortsSense</string>
+    <string name="debug_title">Detection log</string>
+    <string name="service_label">ShortsSense</string>
+    <string name="service_summary">Keeps useful Shorts, blocks the rest</string>
+    <string name="service_description">ShortsSense reads the title and channel of the Short currently on screen, decides whether it is useful to you, and covers the ones that are not. Everything happens on this phone: the app has no internet permission.</string>
+
+    <!-- status -->
+    <string name="status_on">Protection is ON</string>
+    <string name="status_off">Protection is OFF</string>
+    <string name="status_hint_on">Short you told it to keep stay untouched. Everything else gets the block screen.</string>
+    <string name="status_hint_off">Turn on the accessibility service to start filtering.</string>
+    <string name="open_accessibility">Open accessibility settings</string>
+    <string name="service_started">Protection started</string>
+    <string name="service_not_enabled">Not enabled yet — tap the button below</string>
+
+    <!-- settings -->
+    <string name="section_mode">What counts as useful</string>
+    <string name="mode_informative">Informative</string>
+    <string name="mode_informative_sub">Study, exams, science, explainers, practical skills</string>
+    <string name="mode_study">Study only (beta)</string>
+    <string name="mode_study_sub">Academic material only. Stricter, and the study/not-study line is fuzzy.</string>
+
+    <string name="section_strictness">Strictness</string>
+    <string name="strictness_hint">How much useful content you are willing to lose to catch more junk.</string>
+
+    <string name="section_action">When a Short is blocked</string>
+    <string name="action_overlay">Freeze it with a 3 second block screen</string>
+    <string name="action_overlay_sub">Shows what it read, why it blocked, and a countdown</string>
+    <string name="action_skip">Skip to the next Short automatically</string>
+    <string name="action_skip_sub">Same block screen, but the countdown swipes instead of exiting</string>
+
+    <string name="section_countdown">Countdown seconds</string>
+    <string name="section_channels">Channels</string>
+    <string name="allowlist_hint">Channel handle or name</string>
+    <string name="add">Add</string>
+    <string name="always_allow">Always allow this channel</string>
+    <string name="learn_channels">Learn from my taps on the block screen</string>
+    <string name="learn_channels_sub">When you tap "Always allow", remember that channel</string>
+
+    <string name="section_stats">Today</string>
+    <string name="stats_fmt">Blocked %1$d · Let through %2$d</string>
+    <string name="reset_stats">Reset counters</string>
+
+    <string name="debug_open">Detection log &amp; classifier test</string>
+    <string name="debug_logging">Record a detection log</string>
+
+    <string name="section_about">About this app</string>
+    <string name="about_body">ShortsSense never connects to the internet and stores nothing outside this phone. It sees what is on screen only while YouTube is in the foreground, uses the title and channel to make a decision, and keeps decisions in memory. Limits: it can only judge by title and channel, so a clickbait title on a study channel can slip through, and a good Short with a vague title can be blocked — tap "Keep watching anyway" when that happens. Detection depends on YouTube\'s internal view IDs, which can change when YouTube updates.</string>
+
+    <!-- block screen -->
+    <string name="blocked_title">Not for you right now</string>
+    <string name="blocked_reason_fmt">Read as: %1$s</string>
+    <string name="blocked_keep">Keep watching anyway</string>
+    <string name="blocked_allow">Always allow this channel</string>
+    <string name="blocked_exit">Take me out</string>
+    <string name="blocked_countdown_fmt">Closing in %1$d…</string>
+    <string name="blocked_countdown_skip_fmt">Skipping in %1$d…</string>
+    <string name="blocked_unknown">Could not read the title</string>
+</resources>

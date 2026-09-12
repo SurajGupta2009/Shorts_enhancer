@@ -1,0 +1,20 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- rounded "phone screen" with a vertical Shorts mark and a keep-arrow -->
+    <path
+        android:fillColor="#2E7D6F"
+        android:pathData="M38,26 h32 a6,6 0 0 1 6,6 v44 a6,6 0 0 1 -6,6 h-32 a6,6 0 0 1 -6,-6 v-44 a6,6 0 0 1 6,-6 z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M50,38 l14,10 -14,10 z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M48,64 h12 v5 h-12 z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.85"
+        android:pathData="M48,72 h12 v5 h-12 z" />
+</vector>

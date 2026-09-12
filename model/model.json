@@ -1,0 +1,86 @@
+{
+  "name": "ShortsSense tiny text model",
+  "version": 1,
+  "classes": [
+    "study",
+    "info",
+    "ent"
+  ],
+  "features": 20000,
+  "scale": 4096,
+  "thresholds": {
+    "info_margin": -6.888,
+    "study_margin": -4.162,
+    "temperature": 5.9,
+    "presets": {
+      "informative": [
+        {
+          "budget": 0.01,
+          "margin": -11.787
+        },
+        {
+          "budget": 0.02,
+          "margin": -11.379
+        },
+        {
+          "budget": 0.05,
+          "margin": -4.916
+        },
+        {
+          "budget": 0.1,
+          "margin": 0.4
+        },
+        {
+          "budget": 0.2,
+          "margin": 4.265
+        }
+      ],
+      "study": [
+        {
+          "budget": 0.01,
+          "margin": -11.692
+        },
+        {
+          "budget": 0.02,
+          "margin": -8.977
+        },
+        {
+          "budget": 0.05,
+          "margin": -2.88
+        },
+        {
+          "budget": 0.1,
+          "margin": 0.717
+        },
+        {
+          "budget": 0.2,
+          "margin": 3.325
+        }
+      ]
+    }
+  },
+  "metrics": {
+    "synthetic_unseen_topics": {
+      "info_mode": {
+        "theta": -6.888336328229496,
+        "useful_blocked": 0.0094,
+        "junk_kept": 0.0385
+      },
+      "study_mode": {
+        "theta": -4.16240236659544,
+        "useful_blocked": 0.2099,
+        "junk_kept": 0.0896
+      }
+    },
+    "hard_cases": {
+      "n": 157,
+      "accuracy": 0.9745,
+      "useful_blocked": 0.0204,
+      "junk_kept": 0.0339
+    },
+    "max_quantisation_error": 0.0
+  },
+  "trained_at": "2026-09-12",
+  "train_docs": 30726,
+  "seed": 20260912
+}

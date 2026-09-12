@@ -1,0 +1,83 @@
+name: Build ShortsSense APK
+
+# Runs on every push and can be started by hand from the Actions tab.
+# The APK lands in the run's "Artifacts" section; tagging a release attaches it there too.
+on:
+  push:
+    branches: ["main", "arena/**"]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # The model is trained here rather than trusted from git: the APK therefore always
+      # contains a model that the committed Python actually produces, and the report in the
+      # logs is the report for the model inside this APK.
+      - name: Retrain the model from source (standard library only, ~30 s)
+        run: |
+          python3 model/train.py
+          python3 model/keywords.py android/app/src/main/assets/keywords.txt
+          cp model/model.bin model/model.meta android/app/src/main/assets/
+
+      - name: Show what the model claims about itself
+        run: |
+          cat model/model.meta
+          echo "--- artifact hashes ---"
+          sha256sum model/model.bin android/app/src/main/assets/model.bin
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      # ParityTest compares the Kotlin feature extractor against a fixture produced by the
+      # Python trainer; ClassifierTest asserts the shipped model still keeps study content.
+      - name: Unit tests (includes the Python/Kotlin parity test)
+        working-directory: android
+        run: ./gradlew --no-daemon testDebugUnitTest
+
+      - name: Build the debug APK
+        working-directory: android
+        run: ./gradlew --no-daemon assembleDebug
+
+      - name: Upload the APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ShortsSense-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+
+      - name: Keep the test report when something fails
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: android/app/build/reports/tests/
+
+      - name: Attach the APK to a tagged release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: android/app/build/outputs/apk/debug/app-debug.apk
+          body: |
+            ShortsSense — keeps useful YouTube Shorts, blocks the rest.
+
+            Install the attached APK, then enable the accessibility service when the app asks.
+            Everything runs on-device; the app has no internet permission.
