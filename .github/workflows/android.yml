@@ -135,10 +135,10 @@ jobs:
             echo
             cat /tmp/test-summary.md
             echo
-            echo "APK: $(ls -la android/app/build/outputs/apk/debug/*.apk | awk '{print $5}') bytes"
+            echo "APK: $(stat -c %s android/app/build/outputs/apk/debug/app-debug.apk) bytes"
             echo
             echo '```'
-            sha256sum android/app/build/outputs/apk/debug/*.apk
+            sha256sum android/app/build/outputs/apk/debug/app-debug.apk
             echo '```'
           } > /tmp/last-run.md
           git config user.name "shortsense-ci"
@@ -149,8 +149,6 @@ jobs:
           git add -f ci-logs/last-run.md
           git commit -m "ci: record run $GITHUB_RUN_NUMBER" || echo "nothing to commit"
           git push --force origin ci-logs
-
-          EOF
 
       # A debug APK that built but did not package the model would install and then
       # crash on first use, so check the contents rather than trusting the exit code.
