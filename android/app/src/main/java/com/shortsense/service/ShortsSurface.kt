@@ -137,7 +137,7 @@ object ShortsSurface {
         val title = buildTitle(titleCandidates)
         val channel = channelCandidates.firstOrNull()?.text?.trim()?.removePrefix("@") ?: ""
 
-        val trace = buildString {
+        var trace = buildString {
             append("player=").append(playerId ?: "none")
             append(" titles=[")
             titleCandidates.take(3).forEach {
