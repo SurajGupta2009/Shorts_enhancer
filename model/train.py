@@ -199,12 +199,31 @@ def logsumexp(a, b):
     return m + math.log(math.exp(a - m) + math.exp(b - m))
 
 
-def margin(probs, mode):
-    """log-odds in favour of keeping, the quantity the phone thresholds."""
-    eps = 1e-12
+def logits_of(QW, QB, index, fkeys):
+    """Scaled logits, byte for byte the same integers the phone accumulates."""
+    out = [QB[0], QB[1], QB[2]]
+    for k in fkeys:
+        j = index.get(k)
+        if j is None:
+            continue
+        w = QW[j]
+        out[0] += w[0]
+        out[1] += w[1]
+        out[2] += w[2]
+    return [x / SCALE for x in out]
+
+
+def margin(logits, mode):
+    """log-odds in favour of keeping: the quantity both the app and these metrics use.
+
+    Computed with log-sum-exp on the logits rather than from probabilities. Doing it via
+    probabilities needs an epsilon guard, and that guard silently caps the value at about
+    +/-27.6 - which would make the shipped thresholds describe a different quantity than
+    the app thresholds on.
+    """
     if mode == "info":
-        return math.log(probs[0] + probs[1] + eps) - math.log(probs[2] + eps)
-    return math.log(probs[0] + eps) - math.log(probs[1] + probs[2] + eps)
+        return logsumexp(logits[0], logits[1]) - logits[2]
+    return logits[0] - logsumexp(logits[1], logits[2])
 
 
 def write_bin(path, QW, QB, index):
@@ -256,11 +275,10 @@ def read_bin(path):
 # --------------------------------------------------------------------------------
 # evaluation
 # --------------------------------------------------------------------------------
-def rates(probs, labels, theta, mode):
+def rates(margins, labels, theta, mode):
     """(useful content blocked, junk let through) at margin threshold theta."""
     good_blocked = good_total = junk_kept = junk_total = 0
-    for p, yi in zip(probs, labels):
-        mm = margin(p, mode)
+    for mm, yi in zip(margins, labels):
         keep = mm >= theta
         want_keep = (yi != 2) if mode == "info" else (yi == 0)
         if want_keep:
@@ -347,22 +365,26 @@ def main():
     print("   max quantisation error on probabilities: %.5f" % qerr)
 
     probs_t = [predict_q(QW, QB, index, f) for f in Xt]
-    gb_info, jk_info = rates(probs_t, yt, 0.0, "info")
-    gb_study, jk_study = rates(probs_t, yt, 0.0, "study")
+    logits_t = [logits_of(QW, QB, index, f) for f in Xt]
+    margins_info_t = [margin(l, "info") for l in logits_t]
+    margins_study_t = [margin(l, "study") for l in logits_t]
+    gb_info, jk_info = rates(margins_info_t, yt, 0.0, "info")
+    gb_study, jk_study = rates(margins_study_t, yt, 0.0, "study")
     temperature = fit_temperature(probs_t, yt)
 
     # thresholds are chosen on the calibration set, never on the reporting set
     cal = calibration.CALIBRATION_CASES
     CX = [feat.features(c["title"], c["channel"]) for c in cal]
     CP = [predict_q(QW, QB, index, f) for f in CX]
+    CL = [logits_of(QW, QB, index, f) for f in CX]
     c_info_labels = [0 if c["informative"] else 2 for c in cal]
     c_study_labels = [0 if c["study"] else 2 for c in cal]
-    info_margins = [margin(p, "info") for p, c in zip(CP, cal) if c["informative"]]
-    study_margins = [margin(p, "study") for p, c in zip(CP, cal) if c["study"]]
+    info_margins = [margin(l, "info") for l, c in zip(CL, cal) if c["informative"]]
+    study_margins = [margin(l, "study") for l, c in zip(CL, cal) if c["study"]]
     theta_info = quantile_threshold(info_margins, args.good_budget)
     theta_study = quantile_threshold(study_margins, args.good_budget)
-    c_gb, c_jk = rates(CP, c_info_labels, theta_info, "info")
-    c_sgb, c_sjk = rates(CP, c_study_labels, theta_study, "study")
+    c_gb, c_jk = rates([margin(l, "info") for l in CL], c_info_labels, theta_info, "info")
+    c_sgb, c_sjk = rates([margin(l, "study") for l in CL], c_study_labels, theta_study, "study")
     # preset rows the app turns into a strictness slider
     presets = {
         "informative": [{"budget": b, "margin": round(quantile_threshold(info_margins, b), 3)}
@@ -384,9 +406,10 @@ def main():
     hc = hard_cases.HARD_CASES
     HX = [feat.features(c["title"], c["channel"]) for c in hc]
     HP = [predict_q(QW, QB, index, f) for f in HX]
+    HL = [logits_of(QW, QB, index, f) for f in HX]
     errors = []
-    for c, p in zip(hc, HP):
-        keep = margin(p, "info") >= theta_info
+    for c, p, l in zip(hc, HP, HL):
+        keep = margin(l, "info") >= theta_info
         want = bool(c["informative"])
         keep_want = p[0] + p[1] >= 0.5
         if keep != want:
@@ -402,8 +425,9 @@ def main():
     # trade-off table on hard cases, so the user can see what the slider does
     curve = []
     hc_info_labels = [0 if c["informative"] else 2 for c in hc]
-    for theta in [-4.0, -2.0, -1.0, -0.5, 0.0, 0.5, 1.0, 2.0, 4.0, 8.0]:
-        gb, jk = rates(HP, hc_info_labels, theta, "info")
+    hc_margins = [margin(l, "info") for l in HL]
+    for theta in [-20.0, -10.0, -5.0, -2.0, -1.0, 0.0, 1.0, 2.0, 5.0, 10.0]:
+        gb, jk = rates(hc_margins, hc_info_labels, theta, "info")
         curve.append((theta, gb, jk))
 
     os.makedirs(args.out, exist_ok=True)
@@ -503,8 +527,9 @@ def main():
             # margins are written explicitly: a probability rounded to six decimals
             # cannot represent them (the model saturates at ~1e-12), and the margin is
             # the quantity the app actually thresholds on.
-            m_info = math.log(max(p[0] + p[1], 1e-12)) - math.log(max(p[2], 1e-12))
-            m_study = math.log(max(p[0], 1e-12)) - math.log(max(p[1] + p[2], 1e-12))
+            lg = logits_of(QW, QB, index, f)
+            m_info = margin(lg, "info")
+            m_study = margin(lg, "study")
             fh.write("%s\t%s\t%s\t%s\t%.6f\t%.6f\n" % (
                 base64.b64encode(title.encode("utf-8")).decode("ascii"),
                 base64.b64encode(channel.encode("utf-8")).decode("ascii"),

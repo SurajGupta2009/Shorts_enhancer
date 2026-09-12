@@ -62,12 +62,12 @@
   "metrics": {
     "synthetic_unseen_topics": {
       "info_mode": {
-        "theta": -4.1199345251798904,
+        "theta": -4.119934532846646,
         "useful_blocked": 0.0073,
         "junk_kept": 0.0348
       },
       "study_mode": {
-        "theta": -2.9826279504876667,
+        "theta": -2.9826279505098117,
         "useful_blocked": 0.2088,
         "junk_kept": 0.0907
       }
