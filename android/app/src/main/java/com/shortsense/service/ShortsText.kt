@@ -247,10 +247,12 @@ object ShortsText {
     fun classify(raw: String): List<Piece> {
         val out = ArrayList<Piece>(6)
         for (chunk in split(raw)) {
+            // Badges are cut before the row is interpreted, so a blob that was nothing but
+            // a badge falls into the length check below. The chrome check must stay where it
+            // was, AFTER "Go to channel" is handled: that phrase is itself in the chrome list,
+            // and testing it first threw away the title and the channel together.
             val t = stripGluedUi(chunk.trim())
             if (t.length < 3) continue
-            // a node that was nothing but badges is UI, not a Short title
-            if (isChrome(t)) continue
 
             val merged = GO_TO_CHANNEL.find(t)
             if (merged != null) {
