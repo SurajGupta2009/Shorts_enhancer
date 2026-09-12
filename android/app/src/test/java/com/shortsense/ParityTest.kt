@@ -30,7 +30,9 @@ class ParityTest {
         val title: String,
         val channel: String,
         val features: List<String>,
-        val probs: DoubleArray
+        val probs: DoubleArray,
+        val marginInfo: Double,
+        val marginStudy: Double
     )
 
     private fun loadCases(): List<Case> {
@@ -43,7 +45,13 @@ class ParityTest {
             val channel = String(Base64.getDecoder().decode(parts[1]), Charsets.UTF_8)
             val features = if (parts[2].isEmpty()) emptyList() else parts[2].split(',')
             val probs = parts[3].split(',').map { it.toInt() / 1_000_000.0 }.toDoubleArray()
-            out.add(Case(title, channel, features, probs))
+            out.add(
+                Case(
+                    title, channel, features, probs,
+                    marginInfo = parts.getOrNull(4)?.toDoubleOrNull() ?: Double.NaN,
+                    marginStudy = parts.getOrNull(5)?.toDoubleOrNull() ?: Double.NaN
+                )
+            )
         }
         return out
     }
@@ -95,12 +103,21 @@ class ParityTest {
 
     @Test
     fun `margins agree with the python definition`() {
-        // margin = log P(keep) - log P(junk); recomputed here from the fixture probabilities
-        for (case in loadCases().filter { it.title.isNotBlank() }) {
-            val expected = Math.log(case.probs[0] + case.probs[1] + 1e-12) - Math.log(case.probs[2] + 1e-12)
+        // The margin is what the app thresholds on, so it is compared directly (and
+        // tightly): both sides compute it from the same quantised logits.
+        var checked = 0
+        for (case in loadCases()) {
             val logits = model.logits(Features.features(case.title, case.channel, lexicon))
-            val actual = model.marginInformative(logits)
-            assertEquals("margin for '${case.title}'", expected, actual, 1e-3)
+            assertEquals(
+                "informative margin for '${case.title}'",
+                case.marginInfo, model.marginInformative(logits), 1e-4
+            )
+            assertEquals(
+                "study margin for '${case.title}'",
+                case.marginStudy, model.marginStudy(logits), 1e-4
+            )
+            checked++
         }
+        assertTrue("checked $checked cases", checked > 100)
     }
 }

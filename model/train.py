@@ -495,15 +495,22 @@ def main():
     parity_path = os.path.join(args.out, "parity.txt")
     with open(parity_path, "w", encoding="utf-8") as fh:
         fh.write("# ShortsSense parity fixture v1\n")
-        fh.write("# base64(title)\tbase64(channel)\tfeatures\tstudy,info,ent (probabilities x1e6)\n")
+        fh.write("# base64(title)\tbase64(channel)\tfeatures\tstudy,info,ent (probabilities x1e6)"
+                 "\tmargin_info\tmargin_study\n")
         for title, channel in parity_samples:
             f = feat.features(title, channel)
             p = predict_q(QW, QB, index, f)
-            fh.write("%s\t%s\t%s\t%s\n" % (
+            # margins are written explicitly: a probability rounded to six decimals
+            # cannot represent them (the model saturates at ~1e-12), and the margin is
+            # the quantity the app actually thresholds on.
+            m_info = math.log(max(p[0] + p[1], 1e-12)) - math.log(max(p[2], 1e-12))
+            m_study = math.log(max(p[0], 1e-12)) - math.log(max(p[1] + p[2], 1e-12))
+            fh.write("%s\t%s\t%s\t%s\t%.6f\t%.6f\n" % (
                 base64.b64encode(title.encode("utf-8")).decode("ascii"),
                 base64.b64encode(channel.encode("utf-8")).decode("ascii"),
                 ",".join(f),
-                ",".join(str(int(round(x * 1000000))) for x in p)))
+                ",".join(str(int(round(x * 1000000))) for x in p),
+                m_info, m_study))
     print("   wrote %s (%d cases)" % (parity_path, len(parity_samples)))
 
     report = [
