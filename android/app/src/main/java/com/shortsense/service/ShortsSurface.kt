@@ -20,7 +20,9 @@ import com.shortsense.nlp.Lexicon
  * The title is not read from one blessed node either: YouTube moves it between versions.
  * Every text node is scored and the best one wins, and whatever the app read is shown on
  * the block screen and written to the detection log, so a wrong read is visible rather
- * than mysterious.
+ * than mysterious. Taking a node's text at face value is not enough - the player merges
+ * the title, the channel row and the sound row into single nodes - so the text is handed
+ * to [ShortsText], which splits those blobs and throws away YouTube's own chrome.
  */
 object ShortsSurface {
 
@@ -94,17 +96,26 @@ object ShortsSurface {
             val id = node.viewIdResourceName?.substringAfterLast('/') ?: ""
             val cls = node.className?.toString() ?: ""
 
-            // A container's contentDescription often packs "TITLE, CHANNEL, 1.2M likes";
-            // split it so the title part can be scored like any other text node.
-            val pieces = splitBlob(raw)
-            for (piece in pieces) {
-                val text = piece.trim()
-                if (text.length < 3 || !seen.add(text.lowercase())) continue
-                if (isButtonOrChrome(cls, id)) continue
-                val score = score(text, id, node, width, height, lex)
-                if (score == null) continue
-                val c = Candidate(text, score, id)
-                if (looksLikeChannel(text, id)) channelCandidates.add(c) else titleCandidates.add(c)
+            for (piece in ShortsText.classify(raw)) {
+                when (piece.kind) {
+                    ShortsText.Kind.CHROME, ShortsText.Kind.SOUND -> return@walk
+
+                    ShortsText.Kind.CHANNEL -> {
+                        val text = piece.text.trim()
+                        if (text.length < 2) return@walk
+                        if (!seen.add("chan:" + text.lowercase())) return@walk
+                        channelCandidates.add(Candidate(text, channelScore(text, id), id))
+                    }
+
+                    ShortsText.Kind.TITLE -> {
+                        val text = piece.text.trim()
+                        if (text.length < 3) return@walk
+                        if (isButtonOrChrome(cls, id)) return@walk
+                        if (!seen.add(text.lowercase())) return@walk
+                        val score = score(text, id, node, width, height, lex) ?: return@walk
+                        titleCandidates.add(Candidate(text, score, id))
+                    }
+                }
             }
         }
 
@@ -117,9 +128,15 @@ object ShortsSurface {
         val trace = buildString {
             append("player=").append(playerId ?: "none")
             append(" titles=[")
-            titleCandidates.take(3).forEach { append("'").append(it.text.take(42)).append("'(").append(it.id).append(", ").append(String.format("%.1f", it.score)).append(") ") }
+            titleCandidates.take(3).forEach {
+                append("'").append(it.text.take(42)).append("'(").append(it.id).append(", ")
+                append(String.format("%.1f", it.score)).append(") ")
+            }
             append("] channels=[")
-            channelCandidates.take(2).forEach { append("'").append(it.text.take(24)).append("' ") }
+            channelCandidates.take(2).forEach {
+                append("'").append(it.text.take(24)).append("'(")
+                append(String.format("%.1f", it.score)).append(") ")
+            }
             append("]")
         }
 
@@ -144,27 +161,22 @@ object ShortsSurface {
         return false
     }
 
-    private fun looksLikeChannel(text: String, id: String): Boolean {
-        if (id.contains("channel") || id.contains("owner") || id.contains("handle")) return true
-        if (text.startsWith("@")) return true
-        // "ChannelName · Subscribe" style blobs
-        if (text.contains("·") && text.length < 60) return true
-        return false
-    }
-
-    private fun splitBlob(raw: String): List<String> {
-        if (raw.length < 30) return listOf(raw)
-        val out = ArrayList<String>(4)
-        for (line in raw.split('\n')) {
-            if (line.length < 30) {
-                out.add(line)
-                continue
-            }
-            // a long single line is usually "TITLE, channel, likes, ..." or a sentence
-            val parts = line.split(", ")
-            if (parts.size >= 3) out.addAll(parts) else out.add(line)
-        }
-        return out
+    /**
+     * Which channel candidate to believe. A handle pulled out of a "Go to channel @x" row is
+     * the strongest signal there is; a long blob with spaces in it is usually a soundtrack
+     * or a merged header, so it is pushed down rather than thrown away.
+     */
+    private fun channelScore(text: String, id: String): Double {
+        var s = 1.0
+        if (id.contains("channel") || id.contains("owner") || id.contains("handle") ||
+            id.contains("avatar") || id.contains("creator")
+        ) s += 2.0
+        if (id.contains("sound") || id.contains("music") || id.contains("audio")) s -= 2.0
+        if (text.length <= 40) s += 0.5
+        if (!text.contains(' ')) s += 0.5
+        if (text.length > 40) s -= 1.5
+        if (ShortsText.isSubscribeRow(text)) s += 1.0
+        return s
     }
 
     /**
@@ -182,6 +194,7 @@ object ShortsSurface {
         lex: Lexicon
     ): Double? {
         if (lex.isUiNoise(text)) return null
+        if (ShortsText.isChrome(text)) return null
         val letters = text.count { it.isLetter() }
         if (letters < 4) return null
         if (text.length > 400) return null
@@ -194,7 +207,10 @@ object ShortsSurface {
 
         var score = 0.0
         if (id.contains("title") || id.contains("reel_metadata") || id.contains("video_title")) score += 3.0
-        if (id.contains("shorts_video_header") || id.contains("reel_player_overlay") || id.contains("reel_player")) score += 2.0
+        if (id.contains("shorts_video_header") || id.contains("reel_player_overlay") ||
+            id.contains("reel_player")
+        ) score += 2.0
+        if (id.contains("sound") || id.contains("music") || id.contains("audio")) score -= 2.0
         if (inBottomBand) score += 1.5
         if (leftAligned) score += 0.5
         score += (minOf(text.length, 140)) / 60.0

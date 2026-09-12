@@ -671,6 +671,7 @@ ent	youtube
 ent	yt
 ent	zodiac
 #section noise
+noise	add to playlist
 noise	advertisement
 noise	ago
 noise	app
@@ -680,21 +681,25 @@ noise	comment
 noise	comments
 noise	description
 noise	dislike
+noise	drag handle
 noise	duration
 noise	explore
 noise	follow
 noise	following
 noise	for
 noise	full
+noise	go to channel
 noise	home
 noise	library
 noise	like
 noise	likes
 noise	live
 noise	more
+noise	more options
 noise	music
 noise	mute
 noise	next
+noise	not interested
 noise	notification
 noise	notifications
 noise	open
@@ -704,31 +709,42 @@ noise	play
 noise	post
 noise	posted
 noise	previous
+noise	promoted
+noise	read more
 noise	recommended
 noise	remix
+noise	remix this video
 noise	replies
 noise	reply
 noise	save
 noise	saved
+noise	scrolling on shorts is paused
 noise	search
 noise	settings
 noise	share
+noise	shop now
 noise	shorts
+noise	show less
 noise	sound
 noise	sponsored
 noise	subscribe
 noise	subscribed
 noise	suggested
+noise	tap to unmute
 noise	thanks
 noise	trending
 noise	unmute
+noise	up next
 noise	use
+noise	use this sound
 noise	video
 noise	videos
 noise	view
 noise	views
 noise	watch
+noise	watch on youtube
 noise	you
+noise	you can update your limit in settings
 #section chaninfo
 chaninfo	aakash
 chaninfo	academics

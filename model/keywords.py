@@ -132,7 +132,13 @@ ENT_KEYWORDS = [
 ]
 
 # Words that show up on the Shorts surface but are not part of the title/channel.
+# Chrome that appears inside the Shorts player itself. The app also has its own, longer
+# list in ShortsText.kt; these are the ones worth knowing on the Python side too.
 UI_NOISE = [
+    "drag handle", "go to channel", "scrolling on shorts is paused",
+    "you can update your limit in settings", "tap to unmute", "up next", "show less",
+    "read more", "more options", "add to playlist", "remix this video", "use this sound",
+    "watch on youtube", "sponsored", "promoted", "shop now", "not interested",
     "shorts", "subscribe", "subscribed", "like", "likes", "dislike", "share",
     "remix", "comments", "comment", "save", "saved", "thanks", "description",
     "views", "view", "ago", "home", "explore", "library", "music", "sound",

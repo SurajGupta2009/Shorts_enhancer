@@ -58,4 +58,5 @@
     <string name="blocked_countdown_fmt">Closing in %1$d…</string>
     <string name="blocked_countdown_skip_fmt">Skipping in %1$d…</string>
     <string name="blocked_unknown">Could not read the title</string>
+    <string name="blocked_exit_failed">Leaving Shorts did not work last time, so this screen will wait for you — tap \'Take me out\' when you are ready.</string>
 </resources>

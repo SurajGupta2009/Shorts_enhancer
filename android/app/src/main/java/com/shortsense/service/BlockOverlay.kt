@@ -53,6 +53,7 @@ class BlockOverlay(private val context: Context) {
         countdownSeconds: Int,
         skipsInstead: Boolean,
         preview: Boolean,
+        note: String? = null,
         callbacks: Callbacks
     ) {
         dismiss()
@@ -91,6 +92,11 @@ class BlockOverlay(private val context: Context) {
             setPadding(0, dp(10), 0, 0)
         })
 
+        if (!note.isNullOrBlank()) {
+            card.addView(label(note, 12f, Color.parseColor("#FFFFC98A")).apply {
+                setPadding(0, dp(6), 0, 0)
+            })
+        }
         card.addView(label(reason, 13f, Color.parseColor("#FFB9B9C7")).apply {
             setPadding(0, dp(10), 0, 0)
         })

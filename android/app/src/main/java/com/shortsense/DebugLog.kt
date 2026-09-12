@@ -26,12 +26,22 @@ object DebugLog {
 
     private val entries = ArrayDeque<Entry>()
 
+    /** Collapses the identical line YouTube's repaint storm used to produce in pairs. */
+    private var lastSignature = ""
+    private var lastSignatureAt = 0L
+    private const val DUPLICATE_WINDOW_MS = 1_500L
+
     @Volatile
     var listener: (() -> Unit)? = null
 
     fun add(kind: String, message: String) {
+        val now = System.currentTimeMillis()
+        val signature = kind + "\u0000" + message
         synchronized(entries) {
-            entries.addFirst(Entry(System.currentTimeMillis(), kind, message))
+            if (signature == lastSignature && now - lastSignatureAt < DUPLICATE_WINDOW_MS) return
+            lastSignature = signature
+            lastSignatureAt = now
+            entries.addFirst(Entry(now, kind, message))
             while (entries.size > CAPACITY) entries.removeLast()
         }
         listener?.invoke()

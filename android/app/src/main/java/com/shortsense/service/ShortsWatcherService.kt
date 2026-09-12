@@ -6,7 +6,9 @@ import android.graphics.Path
 import android.os.Handler
 import android.os.Looper
 import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityNodeInfo
 import com.shortsense.DebugLog
+import com.shortsense.R
 import com.shortsense.Settings
 import com.shortsense.nlp.Classifier
 import com.shortsense.nlp.Lexicon
@@ -28,7 +30,7 @@ import com.shortsense.nlp.Verdict
  *                            block: show the block screen and count it
  *
  * Guards that exist because the alternative is an app that fights the user:
- *   * the same Short is never blocked twice inside 4 seconds,
+ *   * the same Short is never blocked twice inside 4 seconds (see [BlockPolicy]),
  *   * at most 25 block screens a minute, after which the service pauses and says so,
  *   * anything unreadable is kept, never blocked,
  *   * as soon as the foreground app is not YouTube, the block screen disappears.
@@ -52,7 +54,6 @@ class ShortsWatcherService : AccessibilityService() {
         private const val DEBOUNCE_MS = 200L
         private const val RETRY_MS = 250L
         private const val MAX_RETRIES = 3
-        private const val SAME_SHORT_COOLDOWN_MS = 4000L
         private const val MAX_BLOCKS_PER_MINUTE = 25
     }
 
@@ -63,8 +64,9 @@ class ShortsWatcherService : AccessibilityService() {
     private var loadError: String? = null
 
     private var pendingEvaluation: Runnable? = null
-    private var lastBlockKey: String = ""
-    private var lastBlockAt: Long = 0L
+    private val policy = BlockPolicy()
+    private var showingKey: String = ""
+    private var suppressUntil: Long = 0L
     private val blockTimes = ArrayDeque<Long>()
     private var pausedUntil: Long = 0L
     private var wasInShorts = false
@@ -99,12 +101,20 @@ class ShortsWatcherService : AccessibilityService() {
         if (event == null) return
         val pkg = event.packageName?.toString() ?: return
 
+        // Our own block screen is an accessibility window, and its countdown rewrites its
+        // text several times a second. Reacting to those events is what made the screen
+        // flicker: each one was mistaken for "the foreground app is no longer YouTube".
+        if (pkg == packageName) return
+
         if (pkg !in YOUTUBE_PACKAGES) {
-            // The user is somewhere else: never leave anything on screen.
-            if (wasInShorts || overlay?.isShowing() == true) {
+            // Somebody else's window came to the front: never leave anything on screen.
+            // Only a real window change counts - a notification or an input method in front
+            // of YouTube must not tear the block screen down.
+            val foregroundSwitch = event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
+            if (foregroundSwitch && (wasInShorts || overlay?.isShowing() == true)) {
                 dismissOverlay()
                 wasInShorts = false
-                lastBlockKey = ""
+                policy.onLeftShorts()
             }
             return
         }
@@ -112,7 +122,8 @@ class ShortsWatcherService : AccessibilityService() {
             dismissOverlay()
             return
         }
-        if (System.currentTimeMillis() < pausedUntil) return
+        val now = System.currentTimeMillis()
+        if (now < pausedUntil || now < suppressUntil) return
 
         if (ShortsSurface.isShortsWindowClass(event.className)) {
             wasInShorts = true
@@ -127,9 +138,35 @@ class ShortsWatcherService : AccessibilityService() {
         handler.postDelayed(runnable, delayMs)
     }
 
+    /**
+     * The window belonging to YouTube, not whatever happens to be on top of it.
+     *
+     * The block screen covers the whole display, so `rootInActiveWindow` can return our own
+     * overlay - and then the app reads its own words ("Not for you right now") as if they
+     * were a Short title, decides to keep, dismisses the screen, sees the Short again, shows
+     * the screen again. That loop was the other half of the flickering.
+     */
+    private fun youtubeRoot(): AccessibilityNodeInfo? {
+        return try {
+            val mine = ArrayList<AccessibilityNodeInfo>(2)
+            for (w in windows) {
+                val r = w.root ?: continue
+                val p = r.packageName?.toString()
+                if (p != null && p in YOUTUBE_PACKAGES) mine.add(r)
+            }
+            if (mine.isEmpty()) {
+                rootInActiveWindow
+            } else {
+                mine.firstOrNull { ShortsSurface.detectShortsByIds(it) != null } ?: mine.first()
+            }
+        } catch (t: Throwable) {
+            rootInActiveWindow
+        }
+    }
+
     private fun evaluate(attempt: Int) {
         val classifier = this.classifier ?: return
-        val root = rootInActiveWindow
+        val root = youtubeRoot()
         if (root == null) {
             if (attempt < MAX_RETRIES) retry(attempt) else DebugLog.add("warn", "window became unreadable")
             return
@@ -185,7 +222,13 @@ class ShortsWatcherService : AccessibilityService() {
         // ---- it is a block: apply the guards, then show the screen
         val key = (surface.title + "|" + surface.channel).lowercase()
         val now = System.currentTimeMillis()
-        if (key == lastBlockKey && now - lastBlockAt < SAME_SHORT_COOLDOWN_MS) return
+
+        // already up for this exact Short: never re-add it because YouTube painted again
+        if (overlay?.isShowing() == true && key == showingKey) return
+
+        val action = policy.onBlock(key, now)
+        if (action == BlockPolicy.Action.SKIP) return
+        val exitFailed = action == BlockPolicy.Action.SHOW_STABLE
 
         blockTimes.addLast(now)
         while (blockTimes.isNotEmpty() && now - blockTimes.first() > 60_000) blockTimes.removeFirst()
@@ -197,11 +240,14 @@ class ShortsWatcherService : AccessibilityService() {
             return
         }
 
-        lastBlockKey = key
-        lastBlockAt = now
         settings.countBlocked()
-        if (settings.debugLogging) DebugLog.add("block", "$where :: ${verdict.reason}")
-        showBlockScreen(surface.title, surface.channel, verdict)
+        if (settings.debugLogging) {
+            val extra = if (exitFailed) " (no countdown: the last exit did not take)" else ""
+            DebugLog.add("block", "$where :: ${verdict.reason}$extra")
+        }
+        // a Short the exit could not remove gets a screen that stays put
+        val countdown = if (exitFailed) 0 else settings.countdownSeconds
+        showBlockScreen(surface.title, surface.channel, verdict, countdown, exitFailed)
     }
 
     private fun retry(attempt: Int) {
@@ -210,22 +256,33 @@ class ShortsWatcherService : AccessibilityService() {
         handler.postDelayed(runnable, RETRY_MS)
     }
 
-    private fun showBlockScreen(title: String, channel: String, verdict: Verdict) {
+    private fun showBlockScreen(
+        title: String,
+        channel: String,
+        verdict: Verdict,
+        countdownSeconds: Int,
+        exitFailed: Boolean
+    ) {
+        val key = (title + "|" + channel).lowercase()
+        showingKey = key
         overlay?.show(
             title = title,
             channel = channel,
             reason = verdict.reason,
             explained = verdict.explained,
-            countdownSeconds = settings.countdownSeconds,
+            countdownSeconds = countdownSeconds,
             skipsInstead = settings.skipOnTimeout,
             preview = false,
+            note = if (exitFailed) getString(R.string.blocked_exit_failed) else null,
             callbacks = object : BlockOverlay.Callbacks {
                 override fun onKeep() {
+                    policy.onUserKept(key, System.currentTimeMillis())
                     DebugLog.add("user", "kept it: '${title.take(50)}'")
                     dismissOverlay()
                 }
 
                 override fun onAlwaysAllow() {
+                    policy.onUserKept(key, System.currentTimeMillis())
                     if (settings.learnChannels && channel.isNotBlank()) {
                         settings.addChannel("allow", channel)
                         DebugLog.add("user", "always allowing '$channel'")
@@ -234,6 +291,7 @@ class ShortsWatcherService : AccessibilityService() {
                 }
 
                 override fun onLeaveNow() {
+                    policy.onExitAttempt(key, System.currentTimeMillis())
                     if (settings.skipOnTimeout) skipToNextShort() else leaveShorts()
                 }
             }
@@ -248,6 +306,8 @@ class ShortsWatcherService : AccessibilityService() {
             lineTo(metrics.widthPixels / 2f, metrics.heightPixels * 0.22f)
         }
         dismissOverlay()
+        // let the feed settle before judging again, or the Short we just left is re-read
+        suppressUntil = System.currentTimeMillis() + 1500
         // the overlay has to be gone before the gesture is injected, or the swipe lands on it
         handler.postDelayed({
             val gesture = GestureDescription.Builder()
@@ -261,6 +321,7 @@ class ShortsWatcherService : AccessibilityService() {
 
     private fun leaveShorts() {
         dismissOverlay()
+        suppressUntil = System.currentTimeMillis() + 1500
         handler.postDelayed({
             performGlobalAction(GLOBAL_ACTION_BACK)
             DebugLog.add("action", "left Shorts (back)")
@@ -273,6 +334,7 @@ class ShortsWatcherService : AccessibilityService() {
 
     fun dismissOverlay() {
         overlay?.dismiss()
+        showingKey = ""
     }
 
     /** Used by the debug screen: capture and log what the app currently sees. */

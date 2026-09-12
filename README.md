@@ -71,7 +71,8 @@ It will, sometimes. It only sees a title and a channel.
 |---|---|
 | A useful Short was covered | Tap **Keep watching anyway** on the block screen. If it is a channel you trust, tap **Always allow this channel** instead. |
 | Junk keeps getting through | Raise **Strictness** one step. |
-| Too many useful Shorts are being blocked | Lower **Strictness** one step. |
+| Too many useful Shorts are being blocked | Lower **Strictness** one step. *Strict* and *Maximum* are meant to cost you about 10% and 20% of worth-keeping Shorts respectively; *Balanced* is the default for a reason. |
+| The block screen keeps appearing and disappearing | That was a bug, fixed: the screen was reacting to its own countdown. It now stays put, and if "Take me out" fails to leave Shorts it comes back *without* a countdown and waits for you. |
 | A channel is never right | Allow-list it (or block-list it from the log screen) and it stops being judged. |
 | Nothing is being blocked at all | Open **Detection log → Capture screen** while a Short is playing. If the title reads as empty, YouTube has changed its layout: the ID list in `ShortsSurface.kt` needs updating, and the log will show what is on screen. |
 | The block screen appears when it shouldn't | Check the log — the app never blocks a blank read, so something was read. Then allow-list that channel. |
