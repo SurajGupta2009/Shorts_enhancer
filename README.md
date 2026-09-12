@@ -64,6 +64,16 @@ an "attitude status" edit is not.
 **Today** on the home screen counts how many Shorts were blocked and how many were let
 through, which is the honest measure of how much feed you actually skipped.
 
+## How it decides
+
+The short version: it reads the title and the channel, adds up a learned weight for every
+word, phrase, channel and letter fragment it finds, and blocks the Short when the total
+favours entertainment over study-or-informative by more than the strictness you chose.
+Nothing else is consulted — no video, no history, no account.
+
+The long version, with worked examples and the real numbers from the shipped model, is in
+[`docs/how-it-decides.md`](docs/how-it-decides.md).
+
 ## When it gets something wrong
 
 It will, sometimes. It only sees a title and a channel.
