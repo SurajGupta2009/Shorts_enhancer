@@ -138,7 +138,7 @@ HARD_CASES = [
     dict(title="interview with an IAS topper about strategy", channel="Vision IAS", informative=1, study=1, note="exam strategy"),
     dict(title="actor's workout transformation 2026", channel="Entertainment Tonight India", informative=0, study=0, note="celebrity fitness"),
     dict(title="how the RBI controls inflation", channel="Economics Explained", informative=1, study=0, note="economics"),
-    dict(title="motivational speech that will change your life", channel="Dream Big Speaker", informative=0, study=0, note="speech edit"),
+    dict(title="motivational speech that will change your life", channel="Dream Big Speaker", informative=1, study=0, note="motivational talk: the user counts this as informative"),
     dict(title="calculus in 100 seconds", channel="3Blue1Brown", informative=1, study=1, note="maths"),
     dict(title="why planes don't fall — lift explained", channel="Real Engineering", informative=1, study=0, note="engineering"),
     dict(title="how much do youtubers earn", channel="Technical Guruji Vlogs", informative=1, study=0, note="informational, business"),
@@ -178,8 +178,43 @@ HARD_CASES = [
     dict(title="college fest dance performance 🔥", channel="Mumbiker Nikhil", informative=0, study=0, note="performance"),
     dict(title="organic farming method explained", channel="Down to Earth", informative=1, study=0, note="info"),
     dict(title="bike stunt gone wrong", channel="Viral Video Daily", informative=0, study=0, note="stunt"),
-]
 
+    # ---------- the definition the user actually asked for ----------
+    # kept: PCM / competitive problem solving
+    dict(title="JEE Advanced 2023 problem on projectile motion — solved", channel="Physics Wallah", informative=1, study=1, note="PCM problem"),
+    dict(title="can you solve this mole concept question?", channel="Chemistry Adda", informative=1, study=1, note="PCM problem"),
+    dict(title="how to find the last two digits of 7^77 — number theory", channel="Maths Wallah", informative=1, study=1, note="PCM problem"),
+    dict(title="NEET physics: two blocks and a pulley numerical", channel="NEETprep", informative=1, study=1, note="PCM problem"),
+    # kept: motivation that teaches a method, not a grindset edit
+    dict(title="how to stay consistent when you do not feel like studying", channel="Study Corner", informative=1, study=1, note="study motivation with a method"),
+    dict(title="why motivation fades and what actually works", channel="Practical Psychology", informative=1, study=0, note="psychology of motivation"),
+    dict(title="the 2 minute rule for beating procrastination", channel="Topper's Notebook", informative=1, study=1, note="study technique"),
+    dict(title="self discipline is a skill — here is how to train it", channel="Big Think", informative=1, study=0, note="self-improvement"),
+    dict(title="lessons from Ratan Tata's life for young founders", channel="Think School", informative=1, study=0, note="story with lessons"),
+    # kept: history, politics and civics
+    dict(title="how a bill becomes a law in India", channel="Bharat Explained", informative=1, study=1, note="civics"),
+    dict(title="Article 370 explained in 60 seconds", channel="ThePrint", informative=1, study=1, note="polity"),
+    dict(title="Lok Sabha vs Rajya Sabha — what is the difference", channel="Study IQ Education", informative=1, study=1, note="polity"),
+    dict(title="why the Battle of Plassey changed India", channel="History of India", informative=1, study=1, note="history"),
+    dict(title="the Indus Valley city planning nobody talks about", channel="Ancient India Explained", informative=1, study=1, note="history"),
+    dict(title="what the Election Commission actually does", channel="Soch by Mohak Mangal", informative=1, study=1, note="civics"),
+    # kept: new ideas, inventions and how things work
+    dict(title="how the zipper was invented", channel="Today I Found Out", informative=1, study=0, note="invention story"),
+    dict(title="why startups fail — 5 reasons founders miss", channel="Think School", informative=1, study=0, note="business idea"),
+    dict(title="how UPI moved India's money", channel="Wendover Productions", informative=1, study=0, note="systems explainer"),
+    dict(title="the engineering behind a jet engine", channel="Real Engineering", informative=1, study=0, note="engineering"),
+    # blocked: adult and racy content
+    dict(title="hot photoshoot behind the scenes 🔥", channel="Celeb Gossip Daily", informative=0, study=0, note="adult clickbait"),
+    dict(title="nude model shoot leaked", channel="Viral Video Daily", informative=0, study=0, note="adult"),
+    dict(title="bikini try on haul", channel="Fashion Lookbook", informative=0, study=0, note="adult-adjacent haul"),
+    dict(title="sexy song scene hd", channel="Movie Scenes HD", informative=0, study=0, note="racy clip"),
+    dict(title="adult comedy skit 😂", channel="Funny Comedy Squad", informative=0, study=0, note="adult comedy"),
+    dict(title="bold scene from new web series", channel="Bollywood Updates", informative=0, study=0, note="racy clip"),
+    # blocked: memes and grindset edits dressed up as motivation
+    dict(title="top 10 memes of the week 😂", channel="Meme Factory India", informative=0, study=0, note="meme compilation"),
+    dict(title="sigma grindset motivation edit", channel="Sigma Motivation Hindi", informative=0, study=0, note="motivational edit that teaches nothing"),
+    dict(title="gym motivation status — no excuses", channel="Beast Mode Motivation", informative=0, study=0, note="hype edit"),
+]
 
 def stats():
     n = len(HARD_CASES)

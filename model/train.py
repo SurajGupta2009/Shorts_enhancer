@@ -335,7 +335,10 @@ def main():
     ap.add_argument("--l2", type=float, default=2e-6)
     ap.add_argument("--max-features", type=int, default=20000)
     ap.add_argument("--seed", type=int, default=20260912)
-    ap.add_argument("--train-size", type=int, default=26000)
+    # 36000 rather than 26000: the corpus now covers several extra families (PCM practice,
+    # motivation, civics, history, ideas, adult clickbait), and thinning the older families
+    # to pay for them measurably hurt the borderline cases.
+    ap.add_argument("--train-size", type=int, default=36000)
     ap.add_argument("--parity-cases", type=int, default=150)
     ap.add_argument("--avg", default="per_feature", choices=["per_feature", "global"])
     ap.add_argument("--good-budget", type=float, default=0.04,

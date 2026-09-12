@@ -66,6 +66,19 @@ class FeaturesTest {
     }
 
     @Test
+    fun `adult and racy vocabulary is tagged as entertainment`() {
+        val f = Features.features("bikini try on haul 😍", "Fashion Lookbook", lexicon)
+        assertTrue(f.any { it == "k:e:bikini" })
+        assertTrue(f.any { it == "k:e:haul" })
+    }
+
+    @Test
+    fun `civics vocabulary is tagged as informative`() {
+        val f = Features.features("how a bill becomes a law in India", "Bharat Explained", lexicon)
+        assertTrue(f.any { it.startsWith("k:i:") })
+    }
+
+    @Test
     fun `entertainment language is tagged as such`() {
         val f = Features.features("wait for it 🔥 sigma edit", "Sigma Motivation Hindi", lexicon)
         assertTrue(f.any { it.startsWith("k:e:") })

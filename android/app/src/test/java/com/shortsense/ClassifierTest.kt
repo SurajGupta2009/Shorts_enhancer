@@ -97,6 +97,38 @@ class ClassifierTest {
     }
 
     @Test
+    fun `motivation, problems, ideas, history and politics are kept`() {
+        // These are the categories the user named as wanting to keep
+        assertTrue(keep("motivational speech that will change your life", "Dream Big Speaker"))
+        assertTrue(keep("how to stay consistent when you do not feel like studying", "Study Corner"))
+        assertTrue(keep("self discipline is a skill — here is how to train it", "Big Think"))
+        // P / C / M problems
+        assertTrue(keep("JEE Advanced 2023 problem on projectile motion — solved", "Physics Wallah"))
+        assertTrue(keep("can you solve this mole concept question?", "Chemistry Adda"))
+        assertTrue(keep("how to find the last two digits of 7^77 — number theory", "Maths Wallah"))
+        // history, politics, civics
+        assertTrue(keep("how a bill becomes a law in India", "Bharat Explained"))
+        assertTrue(keep("Article 370 explained in 60 seconds", "ThePrint"))
+        assertTrue(keep("why the Battle of Plassey changed India", "History of India"))
+        // new ideas and how things work
+        assertTrue(keep("how the zipper was invented", "Today I Found Out"))
+        assertTrue(keep("why startups fail — 5 reasons founders miss", "Think School"))
+        assertTrue(keep("the engineering behind a jet engine", "Real Engineering"))
+    }
+
+    @Test
+    fun `memes, hype edits and adult content are blocked`() {
+        assertFalse(keep("top 10 memes of the week 😂", "Meme Factory India"))
+        assertFalse(keep("sigma grindset motivation edit", "Sigma Motivation Hindi"))
+        assertFalse(keep("gym motivation status — no excuses", "Beast Mode Motivation"))
+        assertFalse(keep("hot photoshoot behind the scenes 🔥", "Celeb Gossip Daily"))
+        assertFalse(keep("nude model shoot leaked", "Viral Video Daily"))
+        assertFalse(keep("bikini try on haul", "Fashion Lookbook"))
+        assertFalse(keep("sexy song scene hd", "Movie Scenes HD"))
+        assertFalse(keep("bold scene from new web series", "Bollywood Updates"))
+    }
+
+    @Test
     fun `metadata matches the binary it shipped with`() {
         assertEquals(meta.features, model.featureCount)
         assertTrue("hard case accuracy should be high", meta.hardCaseAccuracy > 0.9)

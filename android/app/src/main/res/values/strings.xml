@@ -18,9 +18,9 @@
     <!-- settings -->
     <string name="section_mode">What counts as useful</string>
     <string name="mode_informative">Informative</string>
-    <string name="mode_informative_sub">Study, exams, science, explainers, practical skills</string>
+    <string name="mode_informative_sub">Study and exam problems, motivation that teaches, science, new ideas, history, politics</string>
     <string name="mode_study">Study only (beta)</string>
-    <string name="mode_study_sub">Academic material only. Stricter, and the study/not-study line is fuzzy.</string>
+    <string name="mode_study_sub">Academic material only — physics, chemistry, maths, biology, computer science. Stricter, and the study/not-study line is fuzzy.</string>
 
     <string name="section_strictness">Strictness</string>
     <string name="strictness_hint">How much useful content you are willing to lose to catch more junk.</string>
@@ -47,7 +47,7 @@
     <string name="debug_logging">Record a detection log</string>
 
     <string name="section_about">About this app</string>
-    <string name="about_body">ShortsSense never connects to the internet and stores nothing outside this phone. It sees what is on screen only while YouTube is in the foreground, uses the title and channel to make a decision, and keeps decisions in memory. Limits: it can only judge by title and channel, so a clickbait title on a study channel can slip through, and a good Short with a vague title can be blocked — tap "Keep watching anyway" when that happens. Detection depends on YouTube\'s internal view IDs, which can change when YouTube updates.</string>
+    <string name="about_body">ShortsSense never connects to the internet and stores nothing outside this phone. It sees what is on screen only while YouTube is in the foreground, uses the title and channel to make a decision, and keeps decisions in memory. Memes, hype edits, racy and adult content are always blocked. Limits: it can only judge by title and channel, so a clickbait title on a study channel can slip through, and a good Short with a vague title can be blocked — tap "Keep watching anyway" when that happens. Detection depends on YouTube\'s internal view IDs, which can change when YouTube updates.</string>
 
     <!-- block screen -->
     <string name="blocked_title">Not for you right now</string>

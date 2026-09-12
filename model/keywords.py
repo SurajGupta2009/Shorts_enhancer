@@ -12,6 +12,27 @@ Matching is done on the *stemmed* token (see features.stem) so "solved"/"solving
 """
 
 INFO_KEYWORDS = [
+    # self-improvement that teaches something, as opposed to "sigma grindset" edits
+    "motivation", "motivated", "motivational", "discipline", "disciplined", "habit",
+    "habits", "consistency", "consistent", "procrastination", "procrastinate", "focus",
+    "self control", "willpower", "mindset", "routine", "goal", "goals", "journaling",
+    "meditation", "stoicism", "stoic", "improve", "improvement", "better at", "growth",
+    # civics, current affairs and government
+    "politics", "political", "election", "elections", "voter", "voting", "parliament",
+    "parliamentary", "constitution", "constitutional", "amendment", "democracy",
+    "democratic", "government", "policy", "economy", "economic", "geopolitics",
+    "diplomacy", "foreign policy", "budget", "taxation", "census", "panchayat",
+    "judiciary", "supreme court", "high court", "president", "prime minister",
+    "chief minister", "lok sabha", "rajya sabha", "assembly", "cabinet", "civil services",
+    "upsc", "ias", "current affairs", "national",
+    # ideas, invention and how things came to be
+    "invention", "invented", "inventor", "innovation", "innovative", "idea", "ideas",
+    "breakthrough", "discovery", "discovered", "origins", "origin", "how it was made",
+    "engineering", "design", "prototype", "startup", "entrepreneur", "entrepreneurship",
+    "business model", "revenue", "profit", "market", "customer", "strategy",
+    "civilisation", "civilization", "empire", "dynasty", "colonial", "independence",
+    "revolution", "treaty", "monarchy", "freedom struggle", "ancient", "medieval",
+    "history", "historical", "archaeology",
     # teaching / study framing
     "explained", "explain", "explanation", "concept", "revision", "revise", "revised",
     "lecture", "lesson", "tutorial", "teach", "teacher", "teacher's", "class", "classes",
@@ -69,6 +90,12 @@ ENT_KEYWORDS = [
     "song", "songs", "music", "lyrical", "remix", "mashup", "jukebox", "audio",
     "cover", "singing", "sing", "singer", "beats", "lofi", "slowed", "reverb",
     "dance", "dancing", "choreography", "hook", "step", "performance", "routine",
+    # adult / racy clickbait (the app is meant to cover this, and the words are reliable)
+    "adult", "xxx", "porn", "nude", "nudes", "naked", "semi nude", "sexy", "sexiest",
+    "hot girl", "hot girls", "bikini", "lingerie", "bra", "cleavage", "boobs", "breast",
+    "thirst trap", "thirsttrap", "onlyfans", "bold", "sizzling", "sensual", "erotic",
+    "milf", "bhabhi", "randi", "sex", "sexy video", "blue film", "web series scene",
+    "item song", "hot photoshoot", "bold scene",
     # comedy / drama
     "comedy", "funny", "joke", "jokes", "meme", "memes", "skit", "roast", "prank",
     "cringe", "laugh", "laughing", "haha", "lol", "fails", "fail", "blooper",
@@ -132,6 +159,8 @@ EDU_CHANNEL_WORDS = [
     "tutorials", "tutorial", "lessons", "lesson", "masterclass", "smp", "facts", "fact",
     "explainer", "explained", "knowledge", "info", "infopedia", "curious", "research",
     "lab", "physicswallah", "unacademy", "vedantu", "byjus", "drishti", "adda247",
+    "think", "varsity", "explainer", "academy", "institute", "history", "polity",
+    "affairs", "gyaan", "gyan", "vigyan", "explained", "ancient", "world", "idea",
     "neetprep", "aakash", "toppr", "doubtnut", "learnohub", "magnetbrains", "examfear",
     "wallah", "sarrthi", "vajiram", "campusx", "striver", "neetcode", "apnacollege",
     "kitchen", "recipes", "recipe", "cooking", "chef", "baking", "guitar", "piano",
@@ -159,10 +188,13 @@ INFO_PHRASES = [
     "how to", "why do", "why does", "why is", "what is", "what are", "difference between",
     "step by step", "in 60 seconds", "in 2 minutes", "explained in", "one shot",
     "important question", "previous year", "important for", "must know", "for beginners",
-    "tips and tricks", "learn how", "how i scored",
+    "tips and tricks", "learn how", "how i scored", "how to stay motivated",
+    "how to stay consistent", "discipline over motivation", "what is the difference",
+    "upsc prelims", "current affairs",
 ]
 
 ENT_PHRASES = [
+    "hot girl", "hot photoshoot", "bold scene", "link in bio", "only fans",
     "wait for it", "gone wrong", "part 2", "part 3", "full video", "must watch",
     "watch till end", "tag your", "best of", "too good", "so funny", "for the first time",
     "my reaction", "exposed", "viral video", "trending now", "no way", "oh my god",

@@ -12,7 +12,10 @@
         android:paddingBottom="28dp">
 
         <!-- ============ status ============ -->
-        <LinearLayout style="@style/Card" android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Card" android:orientation="vertical">
             <TextView
                 android:id="@+id/statusTitle"
                 android:layout_width="wrap_content"
@@ -39,7 +42,10 @@
         </LinearLayout>
 
         <!-- ============ mode ============ -->
-        <LinearLayout style="@style/Card" android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Card" android:orientation="vertical">
             <TextView style="@style/SectionTitle" android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:text="@string/section_mode" />
             <RadioGroup
@@ -71,7 +77,10 @@
         </LinearLayout>
 
         <!-- ============ strictness ============ -->
-        <LinearLayout style="@style/Card" android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Card" android:orientation="vertical">
             <TextView style="@style/SectionTitle" android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:text="@string/section_strictness" />
             <TextView
@@ -97,7 +106,10 @@
         </LinearLayout>
 
         <!-- ============ action ============ -->
-        <LinearLayout style="@style/Card" android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Card" android:orientation="vertical">
             <TextView style="@style/SectionTitle" android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:text="@string/section_action" />
             <Switch
@@ -123,7 +135,10 @@
         </LinearLayout>
 
         <!-- ============ channels ============ -->
-        <LinearLayout style="@style/Card" android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Card" android:orientation="vertical">
             <TextView style="@style/SectionTitle" android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:text="@string/section_channels" />
             <Switch
@@ -166,7 +181,10 @@
         </LinearLayout>
 
         <!-- ============ stats ============ -->
-        <LinearLayout style="@style/Card" android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Card" android:orientation="vertical">
             <TextView style="@style/SectionTitle" android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:text="@string/section_stats" />
             <TextView
@@ -184,7 +202,10 @@
         </LinearLayout>
 
         <!-- ============ tools ============ -->
-        <LinearLayout style="@style/Card" android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Card" android:orientation="vertical">
             <Switch
                 android:id="@+id/switchDebug"
                 android:layout_width="match_parent"
@@ -200,7 +221,10 @@
         </LinearLayout>
 
         <!-- ============ about ============ -->
-        <LinearLayout style="@style/Card" android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Card" android:orientation="vertical">
             <TextView style="@style/SectionTitle" android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:text="@string/section_about" />
             <TextView

@@ -26,6 +26,21 @@ object RepoFiles {
         return null
     }
 
+    fun findDir(relative: String): File? {
+        for (prefix in candidates) {
+            val f = if (prefix.isEmpty()) File(relative) else File(prefix, relative)
+            if (f.isDirectory) return f
+        }
+        return null
+    }
+
+    /** The app's own Kotlin sources, for tests that check what the code refers to. */
+    fun kotlinSources(): List<File> =
+        (findDir("android/app/src/main/java") ?: error("could not find the app sources"))
+            .walkTopDown()
+            .filter { it.isFile && it.name.endsWith(".kt") }
+            .toList()
+
     fun require(relative: String): File =
         find(relative) ?: error(
             "could not find '$relative'. Run the tests from the repository (the model and " +

@@ -49,12 +49,16 @@ That is the whole setup. The app asks for exactly one permission.
 
 | Control | What it does |
 |---|---|
-| **What counts as useful** | *Informative* (study, exams, science, explainers, practical skills) or *Study only* (academic material; stricter, see the caveat below) |
+| **What counts as useful** | *Informative* — study and exam problems (P/C/M), motivation that teaches something, science and explainers, new ideas and inventions, history, politics and civics — or *Study only* (academic material; stricter, see the caveat below) |
 | **Strictness** | How much useful content you are willing to lose to catch more junk, from *Fewest interruptions* (~1%) to *Maximum filtering* (~20%) |
 | **When a Short is blocked** | Either the countdown **skips to the next Short**, or it **leaves Shorts** entirely |
 | **Countdown seconds** | 0–10, or off (the block screen then waits for you) |
 | **Channels** | Anything you allow-list is never judged again; the app can also learn a channel when you tap *Always allow* |
 | **Detection log** | What the app read off the screen, decision by decision — the screen to open when something goes wrong |
+
+Memes, "sigma grindset" hype edits, and racy or adult content are blocked in both modes:
+that is what the app is for. A motivational *talk* or lesson is treated as informative,
+an "attitude status" edit is not.
 
 **Today** on the home screen counts how many Shorts were blocked and how many were let
 through, which is the honest measure of how much feed you actually skipped.

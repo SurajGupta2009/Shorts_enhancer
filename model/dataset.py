@@ -68,6 +68,29 @@ INFORMATIVE_CHANNELS = {
         "Kurzgesagt Hindi", "Vigyan Darshan", "Gyaan Vigyaan", "Science Ki Duniya",
         "Curious Mind", "Fact Science Hindi", "InfoBytes India", "Explainer Daily",
     ],
+    "motivation": [
+        "Sandeep Maheshwari", "Gaur Gopal Das", "Jay Shetty", "Simerjeet Singh",
+        "Josh Talks", "TEDx Talks", "TED", "Motivation Hub India", "Be Inspired Hindi",
+        "Life Lessons Studio", "Dream Big Speaker", "Better Ideas", "Improvement Pill",
+        "The School of Life", "Wisdom Talks India", "Goalcast", "The Nudge",
+    ],
+    "explainer": [
+        "3Blue1Brown", "Veritasium", "MinutePhysics", "Sabine Hossenfelder",
+        "PBS Space Time", "Numberphile", "Computerphile", "Physics Girl",
+        "Technical Guruji Vlogs", "Dhruv Rathee", "Think School",
+    ],
+    "ideas": [
+        "Think School", "Bhandari Explains", "Startup Explained India", "How It Works",
+        "Business Casual", "Company Man", "Practical Engineering", "Wendover Productions",
+        "Half as Interesting", "Real Engineering", "Veritasium", "Mark Rober",
+        "Newsthink", "The B1M", "Megaprojects", "History of the Universe",
+        "History of India", "Extra History", "OverSimplified", "Kings and Generals",
+        "World History Encyclopedia", "Epic History TV", "History Matters",
+        "ThePrint", "Bharat Explained", "Politically Explained", "Study IQ Education",
+        "World Affairs", "Atlas Pro", "Geography Now", "Dhruv Rathee Explains",
+        "Soch by Mohak Mangal", "Bhandari Explains Polity", "Civics Simplified",
+        "Polity with Priya", "Untold History", "Ancient India Explained",
+    ],
     "skill": [
         "Binging with Babish", "Chef Ranveer Brar Shorts", "Hebbars Kitchen",
         "Kabita's Kitchen", "Your Food Lab", "Gordon Ramsay Shorts", "Nino's Home",
@@ -823,6 +846,91 @@ NATURAL_ENT_TEMPLATES = [
 
 
 
+# The board/competitive-problem slice: "solve this with me" content is the single most
+# valuable thing in the feed for a student, so it gets its own group rather than relying on
+# the topic lists above.
+STUDY_GROUPS += [
+    ("problems", "exam", [
+        "JEE Advanced problem", "NEET physics question", "board exam numerical",
+        "previous year question", "olympiad problem", "gate question",
+        "mains level problem", "high weightage question", "toughest question of the paper",
+    ], [
+        "{topic} solved step by step",
+        "can you solve this {topic}?",
+        "{topic} — 3 ways to solve it",
+        "{topic} shortcut that saves 2 minutes",
+        "PYQ: {topic} with full solution",
+        "{topic} — where students lose marks",
+        "attempt this {topic} before the answer",
+        "{topic} solved in 40 seconds",
+    ]),
+    # Motivation is only kept when it teaches a method or a story; "sigma grindset" edits
+    # stay on the blocked side (they are in the junk corpus).
+    ("motivation", "info", [
+        "staying consistent", "beating procrastination", "building a study habit",
+        "self discipline", "focus in a distracted world", "small daily progress",
+        "handling failure", "delayed gratification", "grit and consistency",
+        "morning routine of high achievers",
+    ], [
+        "how to stay consistent when you do not feel like it",
+        "{topic} — the 2 minute rule",
+        "why motivation fades and what actually works",
+        "the science of {topic}",
+        "{topic} explained by a psychologist",
+        "how I built {topic} in 30 days",
+        "{topic} — evidence based advice",
+        "stop waiting for motivation — do this instead",
+    ]),
+    # Civics, politics and history: what "informative" means to most people.
+    ("civics", "exam", [
+        "how a bill becomes a law", "the role of the Election Commission",
+        "fundamental rights", "directive principles", "the panchayat system",
+        "Lok Sabha vs Rajya Sabha", "how the Supreme Court works",
+        "reservation policy", "federalism in India", "the anti defection law",
+        "what Article 370 was", "emergency provisions", "the RTI act",
+    ], [
+        "{topic} explained simply",
+        "{topic} in 60 seconds",
+        "{topic} — civics lesson",
+        "{topic} for UPSC prelims",
+        "why {topic} matters",
+        "{topic} decoded",
+        "{topic} explained with a chart",
+        "teacher explains {topic}",
+    ]),
+    ("history", "exam", [
+        "the Battle of Plassey", "the Quit India movement", "Harappan civilisation",
+        "the Mughal empire", "Ashoka and the Mauryas", "the French Revolution",
+        "the Berlin Wall", "the Silk Road", "the Industrial Revolution",
+        "partition of India", "Chola naval power", "the Vijayanagara empire",
+    ], [
+        "{topic} explained in 60 seconds",
+        "{topic} — full story",
+        "{topic} in one minute",
+        "{topic} for history students",
+        "what really happened in {topic}",
+        "{topic} revision for the exam",
+        "{topic} — timeline explained",
+    ]),
+    # "New ideas": how things are invented, built and sold.
+    ("ideas", "info", [
+        "the zipper", "the QWERTY keyboard", "the jet engine", "the MRI machine",
+        "the UPI payment system", "the shipping container", "the lithium battery",
+        "how Zomato makes money", "why startups fail", "how a credit card works",
+        "the economics of a vending machine", "why every app wants your data",
+        "how patents work", "how insurance prices risk",
+    ], [
+        "how {topic} was invented",
+        "{topic} explained",
+        "the story behind {topic}",
+        "why {topic} works the way it does",
+        "{topic} — engineering explained",
+        "how {topic} actually works",
+        "{topic}: the idea that changed things",
+        "the business model behind {topic}",
+    ]),
+]
+
 # Exam/career notification content: "vacancy", "last date", "admit card", "result" are
 # student material and must land in the academic class, not fall through as unknown words.
 STUDY_GROUPS += [
@@ -884,6 +992,37 @@ JUNK_GROUPS += [
         "gym routine for beginners", "six pack ab routine", "full body workout plan",
         "my study routine in hostel", "everyday makeup routine",
     ], []),
+]
+
+# Adult / racy clickbait. The user asked for this to be blocked outright; title words are
+# the only signal available, and these are reliable ones.
+# Adult / racy clickbait. The user asked for this to be blocked outright, and the words
+# below are the signal: they are rare in legitimate study content and common in the
+# "watch before it is deleted" side of the feed.
+ADULT_TOPICS = [
+    "hot photoshoot", "bikini try on haul", "nude model shoot", "bold scene",
+    "sexy song scene", "hot dance performance", "lingerie haul", "night club dance",
+    "adult web series scene", "hot girl live", "racy photoshoot", "bold photoshoot",
+    "nude art shoot", "sexy dance cover", "bikini photoshoot", "intimate scene",
+    "seductive dance", "hot model shoot", "cleavage reveal", "semi nude shoot",
+    "bold dance video", "adult joke compilation", "sexy outfit haul", "hot workout",
+]
+ADULT_TEMPLATES = [
+    "{topic} video",
+    "{topic} — full video",
+    "{topic} clip",
+    "new {topic}",
+    "watch this {topic}",
+    "{topic} leaked",
+    "{topic} behind the scenes",
+    "{topic} | latest",
+    "{topic} part 2",
+    "{topic} trending now",
+]
+ADULT_CHANNELS = [
+    "Hot Clips Daily", "Bold Videos HD", "Desi Glamour TV", "Racy Reels",
+    "Midnight Clips", "Hotness Unlimited", "Glamour Zone", "Bold Actress Clips",
+    "Late Night Videos", "Sizzling Reels",
 ]
 
 # Topics for the informative side that use words the entertainment corpus also uses.
@@ -1052,6 +1191,98 @@ def build(rng, n_target=26000, holdout=False, include_devanagari=True):
             else:
                 channel = _mutate_channel(rng, rng.choice(JUNK_CHANNELS["ent"]))
             add("ent", title, channel, "junk_group")
+
+    # ---- adult / racy clickbait slice
+    # A fixed block rather than a group: the signal here is the explicit vocabulary
+    # ("bikini", "nude", "sexy", "bold scene"), and it needs enough rows for those words
+    # to earn weights without disturbing the topic-group budgets.
+    for _ in range(n_target // 28 if not holdout else n_target // 140):
+        topic = rng.choice(ADULT_TOPICS)
+        tpl = rng.choice(ADULT_TEMPLATES)
+        title = _decorate(rng, _typo(rng, tpl.format(topic=topic)), "ent")
+        channel = _mutate_channel(rng, rng.choice(ADULT_CHANNELS))
+        add("ent", title, channel, "adult")
+
+    # ---- motivational talks
+    # The user asked for motivational content to count as informative. The line drawn here
+    # is talk/lesson/advice (kept) versus "sigma status edit" (blocked, in the junk corpus).
+    MOTIVATION_TOPICS = [
+        "consistency", "the fear of starting", "handling failure", "comparing yourself to others",
+        "choosing a career", "the habit of showing up", "why discipline beats motivation",
+        "focus in the age of reels", "being a beginner again", "the cost of comfort",
+    ]
+    MOTIVATION_TEMPLATES = [
+        "a talk on {topic} worth 10 minutes",
+        "{topic} — a monk explains",
+        "life advice: {topic}",
+        "lessons from my biggest mistake: {topic}",
+        "{topic} — the honest version",
+        "what nobody tells you about {topic}",
+        "a teacher's advice on {topic}",
+        "{topic} — 5 minutes that will change your day",
+    ]
+    for _ in range(n_target // 40 if not holdout else n_target // 200):
+        topic = rng.choice(MOTIVATION_TOPICS)
+        title = _decorate(rng, _typo(rng, rng.choice(MOTIVATION_TEMPLATES).format(topic=topic)), "info")
+        add("info", title, _mutate_channel(rng, rng.choice(INFORMATIVE_CHANNELS["motivation"])), "motivation_talk")
+
+    # ---- notation-heavy maths: the app must not block an integral because it looks odd
+    MATH_NOTATION = [
+        "∫1/x dx = ln x", "∫x² sin x dx", "∑1/n²", "lim x→0 sin x / x",
+        "d/dx of x ln x", "e^iπ + 1 = 0", "√2 is irrational", "0! = 1",
+        "∫e^-x² dx", "det(A - λI) = 0",
+    ]
+    MATH_TEMPLATES = [
+        "why does {topic} ?",
+        "{topic} — proof",
+        "the intuition behind {topic}",
+        "{topic} explained in 100 seconds",
+        "what {topic} really means",
+        "{topic} — where this comes from",
+        "proving {topic} step by step",
+    ]
+    for _ in range(n_target // 60 if not holdout else n_target // 300):
+        topic = rng.choice(MATH_NOTATION)
+        title = _decorate(rng, rng.choice(MATH_TEMPLATES).format(topic=topic), "math")
+        add("math", title, _mutate_channel(rng, rng.choice(INFORMATIVE_CHANNELS["explainer"])), "math_notation")
+
+    # ---- everyday physics / scientific curiosities
+    PHYSICS_EVERYDAY = [
+        "why we do not slip while walking", "why a bicycle stays upright",
+        "why the sky turns red at sunset", "why ice floats", "how a microwave heats food",
+        "why planes can fly", "why ships do not sink", "how noise cancelling works",
+        "why we get dizzy on rides", "how a fridge moves heat",
+    ]
+    PHYSICS_TEMPLATES = [
+        "{topic} — the physics of everyday things",
+        "the physics behind {topic}",
+        "{topic} explained with a demonstration",
+        "why {topic} — the science",
+        "{topic} in 60 seconds",
+        "the science of {topic}",
+    ]
+    for _ in range(n_target // 60 if not holdout else n_target // 300):
+        topic = rng.choice(PHYSICS_EVERYDAY)
+        title = _decorate(rng, rng.choice(PHYSICS_TEMPLATES).format(topic=topic), "science")
+        add("science", title, _mutate_channel(rng, rng.choice(INFORMATIVE_CHANNELS["explainer"])), "everyday_physics")
+
+    # ---- creator economy / money explainers that junky looking channels also post
+    CREATOR_ECONOMY = [
+        "how much YouTubers earn", "how much a cricketer earns", "how Instagram pays creators",
+        "how much a doctor earns", "how Zomato makes money", "how a small shop pays tax",
+        "where your electricity bill goes", "how airlines price tickets",
+    ]
+    CREATOR_TEMPLATES = [
+        "{topic}",
+        "{topic} — the money explained",
+        "{topic}? here is the breakdown",
+        "{topic} explained simply",
+        "the truth about {topic}",
+    ]
+    for _ in range(n_target // 80 if not holdout else n_target // 300):
+        topic = rng.choice(CREATOR_ECONOMY)
+        title = _decorate(rng, _typo(rng, rng.choice(CREATOR_TEMPLATES).format(topic=topic)), "info")
+        add("info", title, _mutate_channel(rng, rng.choice(INFORMATIVE_CHANNELS["explainer"])), "creator_economy")
 
     # ---- Devanagari slice (split by title hash so train/test stay disjoint)
     dev = augment_devanagari(rng, 1500 if not holdout else 350)

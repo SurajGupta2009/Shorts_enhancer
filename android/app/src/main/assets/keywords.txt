@@ -6,22 +6,27 @@ info	advanced
 info	aiims
 info	algebra
 info	algorithm
+info	amendment
 info	analysis
 info	analyze
 info	anatomy
+info	ancient
 info	answer
 info	answerkey
 info	aperture
 info	app
 info	approach
+info	archaeology
 info	architecture
 info	array
+info	assembly
 info	bank
 info	basic
 info	basics
 info	beginner
 info	behind
 info	benchmark
+info	better at
 info	biochemistry
 info	biology
 info	biomechanics
@@ -31,8 +36,11 @@ info	book
 info	books
 info	botany
 info	breakdown
+info	breakthrough
 info	budget
+info	business model
 info	c++
+info	cabinet
 info	calculus
 info	calorie
 info	career
@@ -40,21 +48,31 @@ info	cat
 info	cause
 info	cbse
 info	cell
+info	census
 info	cet
 info	chapter
 info	chemistry
+info	chief minister
 info	chord
 info	civics
+info	civil services
+info	civilisation
+info	civilization
 info	class
 info	classes
 info	coaching
 info	code
 info	coding
+info	colonial
 info	compare
 info	comparison
 info	complexity
 info	concentration
 info	concept
+info	consistency
+info	consistent
+info	constitution
+info	constitutional
 info	cook
 info	cooking
 info	core
@@ -64,6 +82,8 @@ info	credit
 info	ctet
 info	cue
 info	cuet
+info	current affairs
+info	customer
 info	cutoff
 info	data
 info	database
@@ -74,6 +94,8 @@ info	deep
 info	define
 info	definition
 info	demo
+info	democracy
+info	democratic
 info	deploy
 info	derivation
 info	derive
@@ -81,20 +103,32 @@ info	design
 info	diagram
 info	diet
 info	difference
+info	diplomacy
+info	discipline
+info	disciplined
+info	discovered
+info	discovery
 info	dna
 info	docker
 info	doctor
 info	doubt
 info	drill
+info	dynasty
 info	ecology
+info	economic
 info	economics
 info	economy
 info	education
 info	educational
 info	effect
+info	election
+info	elections
 info	eligibility
+info	empire
 info	engineering
 info	english
+info	entrepreneur
+info	entrepreneurship
 info	equation
 info	exam
 info	example
@@ -111,8 +145,10 @@ info	finance
 info	financial
 info	find
 info	focus
+info	foreign policy
 info	form
 info	formula
+info	freedom struggle
 info	fund
 info	fundamental
 info	gadget
@@ -122,6 +158,9 @@ info	gear
 info	genetics
 info	geography
 info	geometry
+info	geopolitics
+info	goal
+info	goals
 info	government
 info	govt
 info	grade
@@ -131,22 +170,36 @@ info	growth
 info	guide
 info	guitar
 info	habit
+info	habits
 info	hack
 info	hacks
 info	health
+info	high court
 info	hindi
+info	historical
 info	history
 info	how
+info	how it was made
+info	ias
 info	icse
+info	idea
+info	ideas
 info	iit
 info	improve
+info	improvement
+info	independence
 info	inflation
 info	ingredient
+info	innovation
+info	innovative
 info	inorganic
 info	inside
 info	insurance
 info	interview
 info	intuition
+info	invented
+info	invention
+info	inventor
 info	invest
 info	investing
 info	investment
@@ -155,6 +208,8 @@ info	javascript
 info	jee
 info	job
 info	jobs
+info	journaling
+info	judiciary
 info	knead
 info	knife
 info	kotlin
@@ -165,8 +220,10 @@ info	lecture
 info	lesson
 info	linkedin
 info	loan
+info	lok sabha
 info	machine
 info	macro
+info	market
 info	marks
 info	master
 info	material
@@ -177,19 +234,27 @@ info	mbbs
 info	mechanics
 info	medical
 info	medicine
+info	medieval
+info	meditation
 info	memory
 info	merit
 info	method
 info	microbiology
+info	mindset
 info	mistake
 info	mistakes
 info	mobile
 info	mobility
 info	mock
 info	model
+info	monarchy
 info	money
+info	motivated
+info	motivation
+info	motivational
 info	mutual
 info	myth
+info	national
 info	naukri
 info	ncert
 info	neet
@@ -204,7 +269,12 @@ info	nursing
 info	nutrition
 info	optics
 info	organic
+info	origin
+info	origins
+info	panchayat
 info	paper
+info	parliament
+info	parliamentary
 info	pathology
 info	pdf
 info	pharmacology
@@ -221,25 +291,35 @@ info	plan
 info	planner
 info	pointer
 info	police
+info	policy
+info	political
+info	politics
 info	polity
 info	post
 info	posts
 info	practice
 info	preparation
 info	prepare
+info	president
 info	price
+info	prime minister
 info	probability
 info	problem
+info	procrastinate
+info	procrastination
 info	productivity
+info	profit
 info	programming
 info	pronunciation
 info	proof
 info	protein
+info	prototype
 info	prove
 info	pyq
 info	python
 info	query
 info	question
+info	rajya sabha
 info	rank
 info	rbi
 info	reason
@@ -253,10 +333,12 @@ info	research
 info	resource
 info	result
 info	resume
+info	revenue
 info	review
 info	revise
 info	revised
 info	revision
+info	revolution
 info	routine
 info	rrb
 info	salary
@@ -267,6 +349,7 @@ info	scholarship
 info	science
 info	score
 info	security
+info	self control
 info	semester
 info	sheet
 info	shortcut
@@ -279,10 +362,13 @@ info	solve
 info	specs
 info	sql
 info	ssc
+info	startup
 info	statistics
 info	step
 info	steps
 info	stock
+info	stoic
+info	stoicism
 info	strategy
 info	string
 info	structure
@@ -290,9 +376,11 @@ info	studies
 info	study
 info	summarize
 info	summary
+info	supreme court
 info	syllabus
 info	system
 info	tax
+info	taxation
 info	teach
 info	teacher
 info	teacher's
@@ -307,6 +395,7 @@ info	topic
 info	topper
 info	training
 info	treatment
+info	treaty
 info	tree
 info	trick
 info	tricks
@@ -321,6 +410,8 @@ info	vacancy
 info	versus
 info	viva
 info	vocabulary
+info	voter
+info	voting
 info	vs
 info	warmup
 info	website
@@ -328,6 +419,7 @@ info	what
 info	when
 info	which
 info	why
+info	willpower
 info	work
 info	working
 info	workout
@@ -337,6 +429,7 @@ info	zoology
 ent	3am
 ent	actor
 ent	actress
+ent	adult
 ent	asmr
 ent	attitude
 ent	audio
@@ -344,11 +437,19 @@ ent	beast
 ent	beats
 ent	beauty
 ent	betting
+ent	bhabhi
 ent	bhai
+ent	bikini
 ent	bio
 ent	birthday
 ent	biryani
 ent	blooper
+ent	blue film
+ent	bold
+ent	bold scene
+ent	boobs
+ent	bra
+ent	breast
 ent	broken
 ent	burger
 ent	cake
@@ -360,6 +461,7 @@ ent	channel
 ent	chocolate
 ent	choreography
 ent	cinema
+ent	cleavage
 ent	climax
 ent	clip
 ent	clips
@@ -386,6 +488,7 @@ ent	edits
 ent	emotional
 ent	end
 ent	episode
+ent	erotic
 ent	exposed
 ent	facebook
 ent	fail
@@ -414,9 +517,13 @@ ent	highlight
 ent	highlights
 ent	hook
 ent	horoscope
+ent	hot girl
+ent	hot girls
+ent	hot photoshoot
 ent	hours
 ent	hydraulic
 ent	instagram
+ent	item song
 ent	jackpot
 ent	joke
 ent	jokes
@@ -427,6 +534,7 @@ ent	laugh
 ent	laughing
 ent	level
 ent	like
+ent	lingerie
 ent	link
 ent	lobby
 ent	lofi
@@ -441,6 +549,7 @@ ent	mashup
 ent	match
 ent	meme
 ent	memes
+ent	milf
 ent	millionaire
 ent	mindset
 ent	money
@@ -453,19 +562,25 @@ ent	movies
 ent	mukbang
 ent	music
 ent	nail
+ent	naked
 ent	night
 ent	noob
 ent	noodles
+ent	nude
+ent	nudes
 ent	numerology
+ent	onlyfans
 ent	outfit
 ent	pap
 ent	penalty
 ent	performance
 ent	pizza
+ent	porn
 ent	prank
 ent	prediction
 ent	pro
 ent	profit
+ent	randi
 ent	rashifal
 ent	react
 ent	reacting
@@ -483,7 +598,13 @@ ent	satisfying
 ent	satta
 ent	scene
 ent	scenes
+ent	semi nude
+ent	sensual
 ent	serial
+ent	sex
+ent	sexiest
+ent	sexy
+ent	sexy video
 ent	share
 ent	shopping
 ent	short
@@ -494,6 +615,7 @@ ent	sing
 ent	singer
 ent	singing
 ent	six
+ent	sizzling
 ent	skin
 ent	skincare
 ent	skit
@@ -518,6 +640,8 @@ ent	tarot
 ent	tasting
 ent	team
 ent	teaser
+ent	thirst trap
+ent	thirsttrap
 ent	tour
 ent	trailer
 ent	transition
@@ -537,9 +661,11 @@ ent	vlogger
 ent	vlogs
 ent	wait
 ent	watch
+ent	web series scene
 ent	wedding
 ent	whatsapp
 ent	wicket
+ent	xxx
 ent	yaar
 ent	youtube
 ent	yt
@@ -608,6 +734,8 @@ chaninfo	aakash
 chaninfo	academics
 chaninfo	academy
 chaninfo	adda247
+chaninfo	affairs
+chaninfo	ancient
 chaninfo	apnacollege
 chaninfo	baking
 chaninfo	biology
@@ -647,11 +775,14 @@ chaninfo	fitness
 chaninfo	gate
 chaninfo	grammar
 chaninfo	guitar
+chaninfo	gyaan
 chaninfo	gyan
 chaninfo	gym
 chaninfo	health
+chaninfo	history
 chaninfo	ias
 chaninfo	icse
+chaninfo	idea
 chaninfo	iit
 chaninfo	info
 chaninfo	infopedia
@@ -693,6 +824,7 @@ chaninfo	padhaku
 chaninfo	physics
 chaninfo	physicswallah
 chaninfo	piano
+chaninfo	polity
 chaninfo	professor
 chaninfo	programming
 chaninfo	recipe
@@ -714,6 +846,7 @@ chaninfo	studygram
 chaninfo	tax
 chaninfo	tech
 chaninfo	technology
+chaninfo	think
 chaninfo	topper
 chaninfo	toppr
 chaninfo	tuition
@@ -731,6 +864,7 @@ chaninfo	vigyan
 chaninfo	vocabulary
 chaninfo	wallah
 chaninfo	workout
+chaninfo	world
 chaninfo	yoga
 #section chanent
 chanent	army
@@ -827,11 +961,15 @@ chanent	vlogger
 chanent	vlogs
 chanent	yummy
 #phrases
+phrase	info	current affairs
 phrase	info	difference between
+phrase	info	discipline over motivation
 phrase	info	explained in
 phrase	info	for beginners
 phrase	info	how i scored
 phrase	info	how to
+phrase	info	how to stay consistent
+phrase	info	how to stay motivated
 phrase	info	important for
 phrase	info	important question
 phrase	info	in 2 minutes
@@ -842,22 +980,29 @@ phrase	info	one shot
 phrase	info	previous year
 phrase	info	step by step
 phrase	info	tips and tricks
+phrase	info	upsc prelims
 phrase	info	what are
 phrase	info	what is
+phrase	info	what is the difference
 phrase	info	why do
 phrase	info	why does
 phrase	info	why is
 phrase	ent	at 3am
 phrase	ent	best of
+phrase	ent	bold scene
 phrase	ent	exposed
 phrase	ent	for the first time
 phrase	ent	full video
 phrase	ent	gone wrong
 phrase	ent	hits different
+phrase	ent	hot girl
+phrase	ent	hot photoshoot
+phrase	ent	link in bio
 phrase	ent	must watch
 phrase	ent	my reaction
 phrase	ent	no way
 phrase	ent	oh my god
+phrase	ent	only fans
 phrase	ent	part 2
 phrase	ent	part 3
 phrase	ent	so funny
