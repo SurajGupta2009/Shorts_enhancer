@@ -4,6 +4,19 @@ plugins {
 }
 
 android {
+    // One fixed debug key, committed on purpose: GitHub runners generate a fresh debug
+    // keystore every time, which would mean uninstalling the app before every update.
+    // This is a debug-only key with the well known "android" password - not a secret.
+    signingConfigs {
+        create("shortsense") {
+            storeFile = rootProject.file("debug.keystore")
+            storeType = "PKCS12"
+            storePassword = "android"
+            keyAlias = "shortsense"
+            keyPassword = "android"
+        }
+    }
+
     namespace = "com.shortsense"
     compileSdk = 34
 
@@ -16,6 +29,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("shortsense")
+        }
         release {
             // the app ships as a debug-signed (installable) build from CI; see README
             isMinifyEnabled = false

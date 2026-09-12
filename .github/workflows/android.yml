@@ -163,6 +163,8 @@ jobs:
           done
           echo "model.bin: $(echo "$entries" | grep -c 'assets/model.bin') entry, $(unzip -l "$APK" | grep 'assets/model.bin' | awk '{print $1}') bytes"
           sha256sum "$APK" | tee apk-sha256.txt
+          echo "signed with:"
+          keytool -printcert -jarfile "$APK" | grep -E "Owner:|SHA256:" | head -2
           {
             echo "### ShortsSense APK is ready"
             echo
@@ -172,6 +174,8 @@ jobs:
             echo '```'
             sha256sum "$APK"
             echo '```'
+            echo "Updates install over an older ShortsSense because every build from here on"
+            echo "is signed with the same committed debug key."
           } >> "$GITHUB_STEP_SUMMARY"
           echo "18 unit tests passed, APK built and verified."
 
