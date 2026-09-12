@@ -1,5 +1,8 @@
 package com.shortsense.service
 
+import com.shortsense.nlp.Channels
+import java.util.Locale
+
 /**
  * The rules that stop the block screen from turning into a strobe light.
  *
@@ -21,7 +24,8 @@ package com.shortsense.service
 class BlockPolicy(
     private val sameShortCooldownMs: Long = 4_000,
     private val userKeptMs: Long = 60_000,
-    private val exitRetryWindowMs: Long = 30_000
+    private val exitRetryWindowMs: Long = 30_000,
+    private val lostReadConfirmations: Int = 2
 ) {
 
     enum class Action {
@@ -33,6 +37,70 @@ class BlockPolicy(
 
         /** Show it without a countdown: the previous exit did not work. */
         SHOW_STABLE
+    }
+
+    /** What to do about a screen the app is already showing. */
+    enum class ScreenHold {
+        /** Leave it standing. */
+        HOLD,
+
+        /** YouTube is genuinely gone: take it down. */
+        RELEASE
+    }
+
+    /**
+     * Is this the same Short as last time?
+     *
+     * Identity has to survive the way YouTube re-renders: the channel row gains and loses
+     * "· Subscribe", a title picks up a stray bullet or extra spaces between reads. Two
+     * spellings of one Short used to look like two different Shorts, so the cooldowns below
+     * never applied and the same video was blocked again and again.
+     */
+    fun keyOf(title: String, channel: String): String {
+        val t = fold(title)
+        val c = Channels.normalize(channel)
+        return if (c.isEmpty()) t else "$t|$c"
+    }
+
+    /** Lowercase, punctuation and emoji folded to single spaces, so "Top 10! 😂" == "top 10". */
+    private fun fold(raw: String): String {
+        val sb = StringBuilder(raw.length)
+        var lastWasSpace = true
+        for (ch in raw.lowercase(Locale.US)) {
+            // Both combining-mark classes count as letters: Devanagari keeps its vowel
+            // marks in the non-spacing category, but several Indic scripts put them in the
+            // spacing one, and dropping either would merge different titles.
+            val combines = Character.getType(ch) == Character.NON_SPACING_MARK.toInt() ||
+                Character.getType(ch) == Character.COMBINING_SPACING_MARK.toInt()
+            if (ch.isLetterOrDigit() || combines) {
+                // letters, digits and the vowel marks of Indic scripts: all of them are part
+                // of the title, and dropping the marks would make two different Hindi or
+                // Marathi titles fold into the same identity
+                sb.append(ch)
+                lastWasSpace = false
+            } else if (!lastWasSpace) {
+                // any separator - space, "·", "—", emoji - is one space, and never a leading
+                // one, so a title that gains a stray bullet keeps the same identity
+                sb.append(' ')
+                lastWasSpace = true
+            }
+        }
+        return sb.toString().trim()
+    }
+
+    /**
+     * A read that found no Shorts content.
+     *
+     * A standing block screen is never taken down by this: the block screen is a window over
+     * YouTube, YouTube stops painting the player behind it, and the app then reads "no Shorts
+     * here" as if the user had left. It dismissed its own screen, the Short came back, and it
+     * blocked it again a few seconds later - the "warning appears for a second, goes away,
+     * repeats" report. Only a real foreground switch (see [EventRoute]) releases a screen
+     * that is already up, or [lostReadConfirmations] reads in a row that agree.
+     */
+    fun onLostShorts(overlayShowing: Boolean, consecutiveReads: Int): ScreenHold {
+        if (overlayShowing) return ScreenHold.HOLD
+        return if (consecutiveReads >= lostReadConfirmations) ScreenHold.RELEASE else ScreenHold.HOLD
     }
 
     private var lastKey = ""

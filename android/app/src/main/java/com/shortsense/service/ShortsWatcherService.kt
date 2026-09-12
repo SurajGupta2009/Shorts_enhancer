@@ -78,6 +78,9 @@ class ShortsWatcherService : AccessibilityService() {
     private var pausedUntil: Long = 0L
     private var wasInShorts = false
 
+    /** Reads in a row that found no Shorts content. One is not evidence - see BlockPolicy. */
+    private var lostReads = 0
+
     override fun onServiceConnected() {
         super.onServiceConnected()
         instance = this
@@ -184,13 +187,22 @@ class ShortsWatcherService : AccessibilityService() {
 
         if (!surface.isShorts) {
             // Either the user is elsewhere in YouTube, or YouTube is still painting the
-            // player. If we were just in Shorts, give it another go before giving up.
-            if (wasInShorts && attempt < MAX_RETRIES && surface.playerIdSeen == null) {
-                retry(attempt)
-                return
-            }
+            // player, or our own block screen is covering it and YouTube has stopped
+            // drawing the feed behind us. Only the last case matters for flicker: taking
+            // the screen down there would re-block the same Short a moment later.
             if (wasInShorts) {
+                lostReads += 1
+                if (policy.onLostShorts(overlay?.isShowing() == true, lostReads) ==
+                    BlockPolicy.ScreenHold.HOLD
+                ) {
+                    if (settings.debugLogging) {
+                        DebugLog.add("detect", "no Shorts read (${lostReads}) — screen stays :: ${surface.trace}")
+                    }
+                    if (attempt < MAX_RETRIES) retry(attempt)
+                    return
+                }
                 wasInShorts = false
+                lostReads = 0
                 if (settings.debugLogging) DebugLog.add("detect", "left Shorts — ${surface.trace}")
             }
             dismissOverlay()
@@ -198,6 +210,7 @@ class ShortsWatcherService : AccessibilityService() {
         }
 
         wasInShorts = true
+        lostReads = 0
 
         if (surface.title.isBlank() && attempt < MAX_RETRIES) {
             // Title node not rendered yet: this is the documented failure mode, retry.
@@ -221,7 +234,8 @@ class ShortsWatcherService : AccessibilityService() {
             // A screen the app could not read must not tear down a block screen that is
             // standing: the same Short would be blocked again a moment later, which looks
             // like flicker. Only a Short that was read and judged keepable clears it.
-            if (!verdict.unknown || overlay?.isShowing() != true) dismissOverlay()
+            val sameShort = policy.keyOf(surface.title, surface.channel) == showingKey
+            if (!verdict.unknown && !(sameShort && overlay?.isShowing() == true)) dismissOverlay()
             if (!verdict.unknown) settings.countAllowed()
             DecisionLog.add(
                 if (verdict.unknown) DecisionLog.Kind.UNKNOWN else DecisionLog.Kind.KEEP,
@@ -234,7 +248,9 @@ class ShortsWatcherService : AccessibilityService() {
         }
 
         // ---- it is a block: apply the guards, then show the screen
-        val key = (surface.title + "|" + surface.channel).lowercase()
+        // keyOf, not the raw strings: the channel row gains and loses "· Subscribe" between
+        // reads, and a key that changes with it defeats every guard below.
+        val key = policy.keyOf(surface.title, surface.channel)
         val now = System.currentTimeMillis()
 
         // already up for this exact Short: never re-add it because YouTube painted again
@@ -280,7 +296,7 @@ class ShortsWatcherService : AccessibilityService() {
         countdownSeconds: Int,
         exitFailed: Boolean
     ) {
-        val key = (title + "|" + channel).lowercase()
+        val key = policy.keyOf(title, channel)
         showingKey = key
         overlay?.show(
             title = title,
@@ -390,6 +406,9 @@ class ShortsWatcherService : AccessibilityService() {
         overlay?.dismiss()
         showingKey = ""
     }
+
+    /** Used by the debug screen to prove the identity rules on a real device. */
+    fun keyFor(title: String, channel: String): String = policy.keyOf(title, channel)
 
     /** Used by the debug screen: capture and log what the app currently sees. */
     fun captureNow(): String {
