@@ -51,11 +51,59 @@ jobs:
       # Python trainer; ClassifierTest asserts the shipped model still keeps study content.
       - name: Unit tests (includes the Python/Kotlin parity test)
         working-directory: android
-        run: ./gradlew --no-daemon testDebugUnitTest
+        run: |
+          set +e
+          ./gradlew --no-daemon --console=plain testDebugUnitTest 2>&1 | tee /tmp/tests.log
+          exit ${PIPESTATUS[0]}
 
       - name: Build the debug APK
         working-directory: android
-        run: ./gradlew --no-daemon assembleDebug
+        run: |
+          set +e
+          ./gradlew --no-daemon --console=plain assembleDebug 2>&1 | tee /tmp/build.log
+          exit ${PIPESTATUS[0]}
+
+      # A build log you cannot read is a build log that does not exist. When anything
+      # fails, the tail of it is pushed to a `ci-logs` branch and summarised on the run
+      # page, so the failure is diagnosable from a phone.
+      - name: Publish the failure output
+        if: failure()
+        run: |
+          mkdir -p ci-logs
+          {
+            echo "# Last CI failure"
+            echo
+            echo "## unit tests"
+            echo '```'
+            tail -c 40000 /tmp/tests.log 2>/dev/null || echo "(tests never started)"
+            echo '```'
+            echo "## apk build"
+            echo '```'
+            tail -c 20000 /tmp/build.log 2>/dev/null || echo "(build never started)"
+            echo '```'
+          } > ci-logs/last-failure.md
+          {
+            echo "### CI failure"
+            echo '```'
+            grep -E "^e: |error:|FAILED|Execution failed|Caused by|What went wrong" /tmp/tests.log /tmp/build.log 2>/dev/null | head -40
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          git config user.email "ci@shortsense.invalid"
+          git config user.name "ShortsSense CI"
+          git checkout -B ci-logs
+          git add -f ci-logs/last-failure.md
+          git commit -m "CI failure log $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git push --force origin ci-logs || echo "could not push ci-logs (branch protection?)"
+
+      - name: Upload the test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            android/app/build/reports/tests/
+            android/app/build/test-results/
+          if-no-files-found: warn
 
       - name: Upload the APK
         uses: actions/upload-artifact@v4
@@ -63,13 +111,6 @@ jobs:
           name: ShortsSense-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
-
-      - name: Keep the test report when something fails
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-reports
-          path: android/app/build/reports/tests/
 
       - name: Attach the APK to a tagged release
         if: startsWith(github.ref, 'refs/tags/v')

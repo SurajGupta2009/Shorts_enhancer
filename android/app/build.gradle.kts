@@ -54,7 +54,7 @@ dependencies {
 val syncModelArtifacts = tasks.register<Copy>("syncModelArtifacts") {
     from(rootProject.file("../model/model.bin"))
     from(rootProject.file("../model/model.json"))
-    into(layout.projectDirectory.dir("src/main/assets"))
+    into(project.layout.projectDirectory.dir("src/main/assets"))
     doFirst { logger.lifecycle("ShortsSense: syncing model artifacts from ../model") }
 }
 
