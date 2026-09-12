@@ -33,10 +33,12 @@ decision. You can overrule it in one tap, and it remembers.
 
 ## Install (no Android Studio needed)
 
-1. Open the **Actions** tab of this repository and click the newest
-   **Build ShortsSense APK** run.
-2. Download the **`ShortsSense-apk`** artifact (a zip containing `app-debug.apk`), or take
-   the APK from **Releases** if a tagged release exists.
+1. Open the **Actions** tab of this repository
+   ([direct link](https://github.com/SurajGupta2009/Shorts_enhancer/actions/workflows/android.yml))
+   and click the newest **Build ShortsSense APK** run — the newest run also prints the APK's
+   SHA-256 and the install notes in its summary.
+2. Download the **`ShortsSense-apk`** artifact (a zip containing `app-debug.apk` and
+   `apk-sha256.txt`), or take the APK from **Releases** if a tagged release exists.
 3. On the phone, open the APK and allow "install unknown apps" for whatever app opened it.
 4. Open **ShortsSense** and tap **Open accessibility settings**.
 5. Find **ShortsSense** in that list, turn it on, and confirm the Android warning.
