@@ -95,12 +95,17 @@ class BlockOverlay(private val context: Context) {
             setPadding(0, dp(10), 0, 0)
         })
 
-        val why = explained
-            .filter { it.second > 0.02 || it.second < -0.02 }
-            .joinToString(", ") { "\u201C${prettyFeature(it.first)}\u201D" }
+        val strong = explained.filter { it.second > 0.02 || it.second < -0.02 }
+        val why = strong.joinToString(", ") { "\u201C${prettyFeature(it.first)}\u201D" }
+        val leanedUseful = (strong.firstOrNull()?.second ?: 0.0) >= 0.0
         if (why.isNotEmpty()) {
-            card.addView(label(if (it(explained) > 0) "read as useful because of $why" else "read as junk because of $why",
-                12f, Color.parseColor("#FF8E8E9E")).apply { setPadding(0, dp(6), 0, 0) })
+            card.addView(
+                label(
+                    if (leanedUseful) "the words that made it look useful: $why"
+                    else "the words that made it look like junk: $why",
+                    12f, Color.parseColor("#FF8E8E9E")
+                ).apply { setPadding(0, dp(6), 0, 0) }
+            )
         }
 
         val counter = label("", 13f, Color.parseColor("#FF9AD5C8")).apply {
