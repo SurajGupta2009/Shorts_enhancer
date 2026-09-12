@@ -50,11 +50,12 @@ That is the whole setup. The app asks for exactly one permission.
 | Control | What it does |
 |---|---|
 | **What counts as useful** | *Informative* — study and exam problems (P/C/M), motivation that teaches something, science and explainers, new ideas and inventions, history, politics and civics — or *Study only* (academic material; stricter, see the caveat below) |
-| **Strictness** | How much useful content you are willing to lose to catch more junk, from *Fewest interruptions* (~1%) to *Maximum filtering* (~20%) |
+| **Strictness** | Five rungs, each measured against the hand-written cases and quoted in the app: *Fewest interruptions* blocks 0% of the useful Shorts in the hand-written set and lets 5% of the junk through, *Balanced* (the default) blocks 0.8% / 2.7%, and *Maximum filtering* blocks 5.7% / 2.7% — the measured rates for every rung are printed by `model/train.py`. |
 | **When a Short is blocked** | Either the countdown **skips to the next Short**, or it **leaves Shorts** entirely |
 | **Countdown seconds** | 0–10, or off (the block screen then waits for you) |
-| **Channels** | Anything you allow-list is never judged again; the app can also learn a channel when you tap *Always allow* |
+| **Channels** | Anything you allow-list is never judged again. Names are normalised, so "@Physics Wallah", "Physics Wallah · Subscribe" and "Physics Wallah" are one channel, and a stored name also covers that channel's suffixed variants (Hindi, Shorts, Clips). The app can learn a channel from your taps: three *Keep* taps on it and it is allowed. |
 | **Detection log** | What the app read off the screen, decision by decision — the screen to open when something goes wrong |
+| **Export log** | Writes one text file with the device, the settings in force, both channel lists, the model version and every decision (title, channel, margin, threshold, whether you overruled it), then opens the share sheet. Nothing leaves the phone unless you send it somewhere. |
 
 Memes, "sigma grindset" hype edits, and racy or adult content are blocked in both modes:
 that is what the app is for. A motivational *talk* or lesson is treated as informative,
@@ -71,9 +72,10 @@ It will, sometimes. It only sees a title and a channel.
 |---|---|
 | A useful Short was covered | Tap **Keep watching anyway** on the block screen. If it is a channel you trust, tap **Always allow this channel** instead. |
 | Junk keeps getting through | Raise **Strictness** one step. |
-| Too many useful Shorts are being blocked | Lower **Strictness** one step. *Strict* and *Maximum* are meant to cost you about 10% and 20% of worth-keeping Shorts respectively; *Balanced* is the default for a reason. |
+| Too many useful Shorts are being blocked | Lower **Strictness** one step. *Balanced* is the default for a reason: it lets through 2.7% of the junk in the hand-written set while blocking 0.8% of what you wanted. |
 | The block screen keeps appearing and disappearing | That was a bug, fixed: the screen was reacting to its own countdown. It now stays put, and if "Take me out" fails to leave Shorts it comes back *without* a countdown and waits for you. |
-| A channel is never right | Allow-list it (or block-list it from the log screen) and it stops being judged. |
+| A channel is never right | Allow-list it (or block-list it from the log screen) and it stops being judged. Adding a channel used to look like it did nothing: the settings screen stored what you typed while the classifier compared the raw text off the screen, so the two never matched. Both sides now go through one normaliser. |
+| You want a second opinion on a decision | **Export log** and open the file: each line is `kind · title · channel · margin · threshold`, so a wrongly kept or wrongly blocked Short can be quoted exactly. |
 | Nothing is being blocked at all | Open **Detection log → Capture screen** while a Short is playing. If the title reads as empty, YouTube has changed its layout: the ID list in `ShortsSurface.kt` needs updating, and the log will show what is on screen. |
 | The block screen appears when it shouldn't | Check the log — the app never blocks a blank read, so something was read. Then allow-list that channel. |
 
@@ -149,13 +151,20 @@ Measured on the held-out sets (`python3 model/train.py` regenerates this table):
 
 | set | useful content blocked | junk let through |
 |---|---|---|
-| 185 hand-written borderline titles | **1.7%** | **1.5%** |
-| unseen topics, synthetic | 0.4% | 2.6% |
+| 197 hand-written borderline titles | **0.8%** | **2.7%** |
+| unseen topics, synthetic | 0.6% | 2.9% |
 
-98.4% of the hand-written cases are decided correctly. The three mistakes, the trade-off
-curve the strictness slider moves, and the per-class breakdown are all in
-[`model/REPORT.md`](model/REPORT.md) — including the two cases whose labels were corrected
-after the first evaluation, in the open.
+98.5% of the hand-written cases are decided correctly. The threshold itself is chosen on
+that same list (the point that minimises useful-blocked + junk-kept, taken at the middle of
+its plateau), so read the 98.5% as lightly optimistic rather than as a held-out score.
+*Study only* is the weaker mode: study material is a subset of informative material, and no
+threshold on it both keeps every PCM problem and rejects every motivational talk.
+
+The three remaining mistakes, the trade-off curve the strictness slider moves, and the
+per-class breakdown are all in [`model/REPORT.md`](model/REPORT.md). Two bugs that made the
+app block useful Shorts are fixed there in the open: the shipped threshold came from a
+39-case quantile and was silently stricter than the model's own operating point, and the
+report quoted that threshold next to rates measured at margin 0.
 
 ### Retraining it (optional, ~30 seconds)
 
