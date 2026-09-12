@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "17"
@@ -110,7 +110,45 @@ jobs:
       - name: Summarise the test run
         if: always()
         run: |
-          python3 - <<'EOF' >> "$GITHUB_STEP_SUMMARY"
+          python3 - <<'EOF' > /tmp/test-summary.md
+          import glob, xml.etree.ElementTree as ET
+          total = failed = skipped = 0
+          names = []
+          for f in glob.glob("android/app/build/test-results/testDebugUnitTest/*.xml"):
+              r = ET.parse(f).getroot()
+              total += int(r.get("tests", 0)); failed += int(r.get("failures", 0)) + int(r.get("errors", 0))
+              skipped += int(r.get("skipped", 0))
+              names.append(r.get("name", "").split(".")[-1])
+          print("## Unit tests: %d passed, %d failed, %d skipped" % (total - failed - skipped, failed, skipped))
+          print()
+          print("`%s`" % "`, `".join(sorted(n for n in names if n)))
+          EOF
+          cat /tmp/test-summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      # Keep a readable record of the newest green run, the same way failures are recorded.
+      - name: Publish the run summary
+        if: success()
+        run: |
+          set -e
+          {
+            echo "# Last green run"
+            echo
+            cat /tmp/test-summary.md
+            echo
+            echo "APK: $(ls -la android/app/build/outputs/apk/debug/*.apk | awk '{print $5}') bytes"
+            echo
+            echo '```'
+            sha256sum android/app/build/outputs/apk/debug/*.apk
+            echo '```'
+          } > /tmp/last-run.md
+          git config user.name "shortsense-ci"
+          git config user.email "ci@users.noreply.github.com"
+          git checkout -B ci-logs
+          mkdir -p ci-logs
+          cp /tmp/last-run.md ci-logs/last-run.md
+          git add -f ci-logs/last-run.md
+          git commit -m "ci: record run $GITHUB_RUN_NUMBER" || echo "nothing to commit"
+          git push --force origin ci-logs
           import glob, xml.etree.ElementTree as ET
           total = failed = skipped = 0
           names = []
