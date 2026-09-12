@@ -90,16 +90,20 @@ def train_variant(X, y, index, opts):
 
 
 def evaluate(W, B, index, Xt, yt, hc, HX):
-    probs_t = [T.predict(W, B, index, f) for f in Xt]
-    tau, gb, jk = T.pick_threshold(probs_t, yt, "info", max_good_blocked=0.05)
+    # Thresholds are quantiles of the useful content's own margins (see train.py); a grid
+    # search saturates at the edge of whatever window it is given, which is why it is gone.
+    margins_t = [T.margin(T.logits_of(W, B, index, f), "info") for f in Xt]
+    tau = T.quantile_threshold([m for m, yi in zip(margins_t, yt) if yi != 2], 0.05)
+    gb, jk = T.rates(margins_t, yt, tau, "info")
+    hmargins = [T.margin(T.logits_of(W, B, index, f), "info") for f in HX]
     hp = [T.predict(W, B, index, f) for f in HX]
     err = 0
     good_blocked = 0
     junk_kept = 0
     n_good = sum(1 for c in hc if c["informative"])
     n_junk = len(hc) - n_good
-    for c, p in zip(hc, hp):
-        keep = (p[0] + p[1]) >= tau
+    for c, m in zip(hc, hmargins):
+        keep = m >= tau
         want = bool(c["informative"])
         if keep == want:
             continue
@@ -109,7 +113,7 @@ def evaluate(W, B, index, Xt, yt, hc, HX):
         else:
             junk_kept += 1
     return {
-        "tau": tau,
+        "tau": round(tau, 3),
         "syn_good_blocked": round(gb, 4),
         "syn_junk_kept": round(jk, 4),
         "hard_acc": round(1 - err / len(hc), 4),

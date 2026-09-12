@@ -148,10 +148,10 @@ Measured on the held-out sets (`python3 model/train.py` regenerates this table):
 
 | set | useful content blocked | junk let through |
 |---|---|---|
-| 157 hand-written borderline titles | **2.0%** | **3.4%** |
-| unseen topics, synthetic | 0.9% | 3.8% |
+| 185 hand-written borderline titles | **1.7%** | **1.5%** |
+| unseen topics, synthetic | 0.4% | 2.6% |
 
-97.5% of the hand-written cases are decided correctly. The four mistakes, the trade-off
+98.4% of the hand-written cases are decided correctly. The three mistakes, the trade-off
 curve the strictness slider moves, and the per-class breakdown are all in
 [`model/REPORT.md`](model/REPORT.md) — including the two cases whose labels were corrected
 after the first evaluation, in the open.
@@ -178,7 +178,7 @@ model/                 everything about the classifier (Python, standard library
   keywords.py          the shared style lexicon -> android/app/src/main/assets/keywords.txt
   features.py          THE feature spec (mirrored by Features.kt, checked by ParityTest)
   train.py             trains, quantises, evaluates, writes model.bin/.meta/.json/REPORT.md
-  hard_cases.py        157 hand-written borderline titles, never trained on
+  hard_cases.py        185 hand-written borderline titles, never trained on
   calibration.py       68 more, used only to choose the shipped thresholds
   classify.py          terminal classifier, for checking a title without a phone
   tune.py              sweeps the training knobs and reports what they change
