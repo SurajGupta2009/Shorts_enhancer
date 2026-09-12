@@ -11,6 +11,7 @@ info	analysis
 info	analyze
 info	anatomy
 info	ancient
+info	announcement
 info	answer
 info	answerkey
 info	aperture
@@ -18,6 +19,7 @@ info	app
 info	approach
 info	archaeology
 info	architecture
+info	arduino
 info	array
 info	assembly
 info	bank
@@ -26,7 +28,6 @@ info	basics
 info	beginner
 info	behind
 info	benchmark
-info	better at
 info	biochemistry
 info	biology
 info	biomechanics
@@ -38,7 +39,7 @@ info	botany
 info	breakdown
 info	breakthrough
 info	budget
-info	business model
+info	build
 info	c++
 info	cabinet
 info	calculus
@@ -52,10 +53,9 @@ info	census
 info	cet
 info	chapter
 info	chemistry
-info	chief minister
 info	chord
+info	circuit
 info	civics
-info	civil services
 info	civilisation
 info	civilization
 info	class
@@ -78,11 +78,11 @@ info	cooking
 info	core
 info	cost
 info	course
+info	craft
 info	credit
 info	ctet
 info	cue
 info	cuet
-info	current affairs
 info	customer
 info	cutoff
 info	data
@@ -108,10 +108,13 @@ info	discipline
 info	disciplined
 info	discovered
 info	discovery
+info	diy
 info	dna
 info	docker
 info	doctor
+info	documentary
 info	doubt
+info	doubts
 info	drill
 info	dynasty
 info	ecology
@@ -123,6 +126,7 @@ info	educational
 info	effect
 info	election
 info	elections
+info	electronics
 info	eligibility
 info	empire
 info	engineering
@@ -145,10 +149,8 @@ info	finance
 info	financial
 info	find
 info	focus
-info	foreign policy
 info	form
 info	formula
-info	freedom struggle
 info	fund
 info	fundamental
 info	gadget
@@ -173,13 +175,14 @@ info	habit
 info	habits
 info	hack
 info	hacks
+info	handmade
+info	handwritten
 info	health
-info	high court
 info	hindi
 info	historical
 info	history
+info	homemade
 info	how
-info	how it was made
 info	ias
 info	icse
 info	idea
@@ -220,9 +223,9 @@ info	lecture
 info	lesson
 info	linkedin
 info	loan
-info	lok sabha
 info	machine
 info	macro
+info	maker
 info	market
 info	marks
 info	master
@@ -254,6 +257,7 @@ info	motivation
 info	motivational
 info	mutual
 info	myth
+info	narrator
 info	national
 info	naukri
 info	ncert
@@ -261,6 +265,7 @@ info	neet
 info	network
 info	neural
 info	neuron
+info	news
 info	note
 info	notes
 info	notification
@@ -302,7 +307,6 @@ info	preparation
 info	prepare
 info	president
 info	price
-info	prime minister
 info	probability
 info	problem
 info	procrastinate
@@ -310,6 +314,7 @@ info	procrastination
 info	productivity
 info	profit
 info	programming
+info	project
 info	pronunciation
 info	proof
 info	protein
@@ -319,7 +324,6 @@ info	pyq
 info	python
 info	query
 info	question
-info	rajya sabha
 info	rank
 info	rbi
 info	reason
@@ -329,6 +333,7 @@ info	recipe
 info	recruitment
 info	recursion
 info	rep
+info	report
 info	research
 info	resource
 info	result
@@ -339,6 +344,8 @@ info	revise
 info	revised
 info	revision
 info	revolution
+info	robot
+info	robotics
 info	routine
 info	rrb
 info	salary
@@ -349,7 +356,6 @@ info	scholarship
 info	science
 info	score
 info	security
-info	self control
 info	semester
 info	sheet
 info	shortcut
@@ -357,6 +363,7 @@ info	shutter
 info	sip
 info	skill
 info	software
+info	soldering
 info	solution
 info	solve
 info	specs
@@ -376,7 +383,6 @@ info	studies
 info	study
 info	summarize
 info	summary
-info	supreme court
 info	syllabus
 info	system
 info	tax
@@ -410,6 +416,7 @@ info	vacancy
 info	versus
 info	viva
 info	vocabulary
+info	voiceover
 info	voter
 info	voting
 info	vs
@@ -430,6 +437,9 @@ ent	3am
 ent	actor
 ent	actress
 ent	adult
+ent	advert
+ent	advertisement
+ent	aesthetic
 ent	asmr
 ent	attitude
 ent	audio
@@ -444,15 +454,14 @@ ent	bio
 ent	birthday
 ent	biryani
 ent	blooper
-ent	blue film
 ent	bold
-ent	bold scene
 ent	boobs
 ent	bra
 ent	breast
 ent	broken
 ent	burger
 ent	cake
+ent	cashback
 ent	catch
 ent	celebrity
 ent	challenge
@@ -470,8 +479,11 @@ ent	comedy
 ent	comment
 ent	compilation
 ent	couple
+ent	couples
+ent	coupon
 ent	cover
 ent	cringe
+ent	crush
 ent	crushing
 ent	crypto
 ent	dance
@@ -480,6 +492,7 @@ ent	day
 ent	days
 ent	defeat
 ent	dessert
+ent	discount
 ent	double
 ent	drama
 ent	eating
@@ -489,14 +502,18 @@ ent	emotional
 ent	end
 ent	episode
 ent	erotic
+ent	esports
 ent	exposed
 ent	facebook
 ent	fail
 ent	fails
 ent	fashion
 ent	film
+ent	flirting
 ent	food
 ent	foodie
+ent	frags
+ent	freefire
 ent	friend
 ent	friendship
 ent	full
@@ -508,7 +525,10 @@ ent	giveaway
 ent	glow
 ent	goal
 ent	gossip
+ent	grindset
 ent	guaranteed
+ent	gym
+ent	gyms
 ent	haha
 ent	hair
 ent	haul
@@ -517,13 +537,10 @@ ent	highlight
 ent	highlights
 ent	hook
 ent	horoscope
-ent	hot girl
-ent	hot girls
-ent	hot photoshoot
 ent	hours
+ent	hustle
 ent	hydraulic
 ent	instagram
-ent	item song
 ent	jackpot
 ent	joke
 ent	jokes
@@ -552,6 +569,7 @@ ent	memes
 ent	milf
 ent	millionaire
 ent	mindset
+ent	minecraft
 ent	money
 ent	montage
 ent	mood
@@ -569,6 +587,7 @@ ent	noodles
 ent	nude
 ent	nudes
 ent	numerology
+ent	offer
 ent	onlyfans
 ent	outfit
 ent	pap
@@ -577,9 +596,16 @@ ent	performance
 ent	pizza
 ent	porn
 ent	prank
+ent	pranks
+ent	pre-book
 ent	prediction
+ent	preorder
 ent	pro
 ent	profit
+ent	promoted
+ent	pubg
+ent	pvp
+ent	pvpers
 ent	randi
 ent	rashifal
 ent	react
@@ -592,19 +618,19 @@ ent	remix
 ent	reverb
 ent	rich
 ent	roast
+ent	roblox
 ent	routine
 ent	sad
+ent	sale
 ent	satisfying
 ent	satta
 ent	scene
 ent	scenes
-ent	semi nude
 ent	sensual
 ent	serial
 ent	sex
 ent	sexiest
 ent	sexy
-ent	sexy video
 ent	share
 ent	shopping
 ent	short
@@ -626,9 +652,12 @@ ent	slowed
 ent	song
 ent	songs
 ent	sound
+ent	speedrun
 ent	spicy
+ent	sponsored
 ent	spotted
 ent	status
+ent	statuses
 ent	step
 ent	stories
 ent	story
@@ -636,23 +665,27 @@ ent	street
 ent	subscribe
 ent	success
 ent	sureshot
+ent	sweaty
 ent	tarot
 ent	tasting
 ent	team
 ent	teaser
-ent	thirst trap
 ent	thirsttrap
+ent	tiktok
 ent	tour
 ent	trailer
 ent	transition
 ent	trend
 ent	trending
 ent	trick
+ent	trolling
 ent	twist
 ent	typing
 ent	unbox
 ent	unboxing
+ent	valorant
 ent	vastu
+ent	vibes
 ent	victory
 ent	video
 ent	viral
@@ -661,7 +694,6 @@ ent	vlogger
 ent	vlogs
 ent	wait
 ent	watch
-ent	web series scene
 ent	wedding
 ent	whatsapp
 ent	wicket
@@ -977,57 +1009,147 @@ chanent	vlogger
 chanent	vlogs
 chanent	yummy
 #phrases
+phrase	info	admit card
+phrase	info	answer key
+phrase	info	application form
+phrase	info	at home
+phrase	info	better at
+phrase	info	biology of
+phrase	info	built from scratch
+phrase	info	business model
+phrase	info	case study
+phrase	info	chemistry of
+phrase	info	chief minister
+phrase	info	civil services
 phrase	info	current affairs
+phrase	info	cut off
 phrase	info	difference between
 phrase	info	discipline over motivation
+phrase	info	diy project
+phrase	info	documentary
+phrase	info	exam date
 phrase	info	explained in
 phrase	info	for beginners
+phrase	info	foreign policy
+phrase	info	freedom struggle
+phrase	info	freely available
+phrase	info	hall ticket
+phrase	info	high court
+phrase	info	how does
+phrase	info	how i built
 phrase	info	how i scored
+phrase	info	how it was made
 phrase	info	how to
+phrase	info	how to make
 phrase	info	how to stay consistent
 phrase	info	how to stay motivated
 phrase	info	important for
 phrase	info	important question
 phrase	info	in 2 minutes
 phrase	info	in 60 seconds
+phrase	info	last date
 phrase	info	learn how
+phrase	info	lok sabha
+phrase	info	make a
+phrase	info	maths behind
+phrase	info	merit list
+phrase	info	motivation speech
+phrase	info	motivational speech
 phrase	info	must know
+phrase	info	notification out
+phrase	info	official update
 phrase	info	one shot
+phrase	info	physics behind
+phrase	info	physics of
 phrase	info	previous year
+phrase	info	prime minister
+phrase	info	rajya sabha
+phrase	info	result date
+phrase	info	science behind
+phrase	info	science project
+phrase	info	self control
+phrase	info	sigma grindset
+phrase	info	speech on
 phrase	info	step by step
+phrase	info	supreme court
+phrase	info	the science of
 phrase	info	tips and tricks
+phrase	info	union budget
 phrase	info	upsc prelims
 phrase	info	what are
+phrase	info	what happens if
 phrase	info	what is
 phrase	info	what is the difference
 phrase	info	why do
+phrase	info	why do we
 phrase	info	why does
+phrase	info	why does a
 phrase	info	why is
 phrase	ent	at 3am
+phrase	ent	auto renew
+phrase	ent	auto renews
 phrase	ent	best of
+phrase	ent	blue film
+phrase	ent	bodybuilding status
 phrase	ent	bold scene
+phrase	ent	book now
+phrase	ent	buy now
+phrase	ent	cash on delivery
+phrase	ent	comedy sketch
+phrase	ent	coupon code
+phrase	ent	dm to order
+phrase	ent	download the app
+phrase	ent	emi available
 phrase	ent	exposed
+phrase	ent	fitness status
+phrase	ent	flat off
 phrase	ent	for the first time
+phrase	ent	free trial
 phrase	ent	full video
 phrase	ent	gone wrong
+phrase	ent	gym edit
+phrase	ent	gym motivation
+phrase	ent	gym status
 phrase	ent	hits different
 phrase	ent	hot girl
+phrase	ent	hot girls
 phrase	ent	hot photoshoot
+phrase	ent	hurry up
+phrase	ent	install the app
+phrase	ent	item song
+phrase	ent	limited period offer
+phrase	ent	limited time offer
 phrase	ent	link in bio
+phrase	ent	motivation status
 phrase	ent	must watch
 phrase	ent	my reaction
 phrase	ent	no way
+phrase	ent	offer ends
 phrase	ent	oh my god
 phrase	ent	only fans
+phrase	ent	order now
 phrase	ent	part 2
 phrase	ent	part 3
+phrase	ent	price drop
+phrase	ent	promo code
+phrase	ent	sale live
+phrase	ent	semi nude
+phrase	ent	sexy video
+phrase	ent	shop now
+phrase	ent	sigma edit
 phrase	ent	so funny
+phrase	ent	subscribe now
 phrase	ent	tag your
+phrase	ent	they dont know
+phrase	ent	thirst trap
 phrase	ent	too good
 phrase	ent	trending now
+phrase	ent	use code
 phrase	ent	viral video
 phrase	ent	wait for it
 phrase	ent	watch till end
+phrase	ent	web series scene
 phrase	ent	what happens next
 phrase	ent	who else
+phrase	ent	workout status
 phrase	ent	you won't believe
