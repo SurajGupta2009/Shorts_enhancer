@@ -99,25 +99,25 @@ class ShortsWatcherService : AccessibilityService() {
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event == null) return
-        val pkg = event.packageName?.toString() ?: return
 
-        // Our own block screen is an accessibility window, and its countdown rewrites its
-        // text several times a second. Reacting to those events is what made the screen
-        // flicker: each one was mistaken for "the foreground app is no longer YouTube".
-        if (pkg == packageName) return
-
-        if (pkg !in YOUTUBE_PACKAGES) {
-            // Somebody else's window came to the front: never leave anything on screen.
-            // Only a real window change counts - a notification or an input method in front
-            // of YouTube must not tear the block screen down.
-            val foregroundSwitch = event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
-            if (foregroundSwitch && (wasInShorts || overlay?.isShowing() == true)) {
-                dismissOverlay()
-                wasInShorts = false
-                policy.onLeftShorts()
-            }
+        // Which events may this service act on? See EventRoute: reacting to our own block
+        // screen's countdown was the flicker.
+        val route = EventRoute.decide(
+            eventPackage = event.packageName?.toString(),
+            eventType = event.eventType,
+            ownPackage = packageName,
+            youtubePackages = YOUTUBE_PACKAGES,
+            wasInShorts = wasInShorts,
+            overlayShowing = overlay?.isShowing() == true
+        )
+        if (route == EventRoute.Route.IGNORE) return
+        if (route == EventRoute.Route.DISMISS_OVERLAY) {
+            dismissOverlay()
+            wasInShorts = false
+            policy.onLeftShorts()
             return
         }
+
         if (!settings.enabled || classifier == null) {
             dismissOverlay()
             return
@@ -339,7 +339,7 @@ class ShortsWatcherService : AccessibilityService() {
 
     /** Used by the debug screen: capture and log what the app currently sees. */
     fun captureNow(): String {
-        val root = rootInActiveWindow ?: return "no readable window"
+        val root = youtubeRoot() ?: return "no readable window"
         val metrics = resources.displayMetrics
         val surface = ShortsSurface.read(root, readLexicon(), metrics.widthPixels, metrics.heightPixels)
         val line = "shorts=${surface.isShorts} title='${surface.title}' channel='${surface.channel}'"

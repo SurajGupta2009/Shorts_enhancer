@@ -52,12 +52,21 @@ class BlockPolicyTest {
     }
 
     @Test
-    fun `leaving shorts forgets everything about the last one`() {
+    fun `leaving shorts forgets the exit that failed`() {
         assertEquals(BlockPolicy.Action.SHOW, policy.onBlock(short, 1_000))
         policy.onExitAttempt(short, 1_200)
-        policy.onUserKept(short, 1_300)
+        assertEquals(BlockPolicy.Action.SHOW_STABLE, policy.onBlock(short, 6_000))
         policy.onLeftShorts()
-        assertEquals(BlockPolicy.Action.SHOW, policy.onBlock(short, 1_400))
+        // back in Shorts with the same Short on screen: a fresh start, countdown restored
+        assertEquals(BlockPolicy.Action.SHOW, policy.onBlock(short, 6_500))
+    }
+
+    @Test
+    fun `a short the user chose to keep stays kept when they come back to it`() {
+        assertEquals(BlockPolicy.Action.SHOW, policy.onBlock(short, 1_000))
+        policy.onUserKept(short, 1_100)
+        policy.onLeftShorts()
+        assertEquals(BlockPolicy.Action.SKIP, policy.onBlock(short, 2_000))
     }
 
     @Test
