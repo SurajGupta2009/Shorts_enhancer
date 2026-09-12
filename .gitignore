@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+*.pyo
+
+# Android / Gradle
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/.idea/
+*.iml
+captures/
+
+# The trained model is committed on purpose (model/model.bin plus the copies in
+# android/app/src/main/assets) so the app can be built without running Python.
+# CI retrains and overwrites them before building, so a stale copy cannot ship.

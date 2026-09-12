@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="12dp"
+        android:paddingBottom="28dp">
+
+        <!-- ============ banner ============ -->
+        <LinearLayout style="@style/Header" android:orientation="vertical"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginStart="12dp" android:layout_marginEnd="12dp"
+            android:layout_marginBottom="12dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:id="@+id/logo"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:src="@drawable/ic_logo"
+                    android:contentDescription="@null" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:paddingStart="12dp">
+
+                    <TextView
+                        style="@style/HeaderTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/app_name" />
+
+                    <TextView
+                        style="@style/HeaderSub"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="2dp"
+                        android:text="@string/app_tagline" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingTop="14dp">
+
+                <TextView
+                    android:id="@+id/statusTitle"
+                    style="@style/StatusPill"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/statusHint"
+                    style="@style/HeaderSub"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingStart="10dp" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/openSettings"
+                style="@style/Action"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/open_accessibility"
+                android:backgroundTint="@color/accent_bright"
+                android:textColor="@color/primary_dark" />
+        </LinearLayout>
+
+        <!-- ============ mode ============ -->
+        <LinearLayout
+            style="@style/Card" android:orientation="vertical"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginStart="12dp" android:layout_marginEnd="12dp"
+            android:layout_marginBottom="12dp">
+            <TextView style="@style/SectionTitle" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:text="@string/section_mode" />
+            <RadioGroup
+                android:id="@+id/modeGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <RadioButton
+                    android:id="@+id/modeInformative"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/mode_informative"
+                    android:textColor="@color/text" />
+                <TextView style="@style/Muted" android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="34dp" android:paddingBottom="8dp"
+                    android:text="@string/mode_informative_sub" />
+                <RadioButton
+                    android:id="@+id/modeStudy"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/mode_study"
+                    android:textColor="@color/text" />
+                <TextView style="@style/Muted" android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="34dp"
+                    android:text="@string/mode_study_sub" />
+            </RadioGroup>
+        </LinearLayout>
+
+        <!-- ============ strictness ============ -->
+        <LinearLayout
+            style="@style/Card" android:orientation="vertical"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginStart="12dp" android:layout_marginEnd="12dp"
+            android:layout_marginBottom="12dp">
+            <TextView style="@style/SectionTitle" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:text="@string/section_strictness" />
+            <TextView
+                android:id="@+id/strictnessLabel"
+                style="@style/Body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold" />
+            <!-- Five named buttons, not a slider: a slider can be nudged by a scroll and
+                 then the setting no longer matches what the user thinks they chose. -->
+            <LinearLayout
+                android:id="@+id/presetBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="6dp" />
+            <TextView
+                android:id="@+id/strictnessExplain"
+                style="@style/Muted"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <TextView style="@style/Muted" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:paddingTop="6dp"
+                android:text="@string/strictness_hint" />
+        </LinearLayout>
+
+        <!-- ============ action ============ -->
+        <LinearLayout
+            style="@style/Card" android:orientation="vertical"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginStart="12dp" android:layout_marginEnd="12dp"
+            android:layout_marginBottom="12dp">
+            <TextView style="@style/SectionTitle" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:text="@string/section_action" />
+            <Switch
+                android:id="@+id/switchSkip"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/action_skip"
+                android:textColor="@color/text" />
+            <TextView style="@style/Muted" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:paddingBottom="10dp"
+                android:text="@string/action_skip_sub" />
+            <TextView
+                android:id="@+id/countdownLabel"
+                style="@style/Body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold" />
+            <SeekBar
+                android:id="@+id/countdown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="10" />
+        </LinearLayout>
+
+        <!-- ============ channels ============ -->
+        <LinearLayout
+            style="@style/Card" android:orientation="vertical"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginStart="12dp" android:layout_marginEnd="12dp"
+            android:layout_marginBottom="12dp">
+            <TextView style="@style/SectionTitle" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:text="@string/section_channels" />
+            <Switch
+                android:id="@+id/switchLearn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/learn_channels"
+                android:textColor="@color/text" />
+            <TextView style="@style/Muted" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:paddingBottom="8dp"
+                android:text="@string/learn_channels_sub" />
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:gravity="center_vertical">
+                <EditText
+                    android:id="@+id/newAllowChannel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="@string/allowlist_hint"
+                    android:inputType="text"
+                    android:importantForAutofill="no" />
+                <Button
+                    style="@style/Action"
+                    android:id="@+id/addAllowChannel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/add" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/allowListBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+            <TextView
+                android:id="@+id/allowEmpty"
+                style="@style/Muted"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="6dp" />
+        </LinearLayout>
+
+        <!-- ============ stats ============ -->
+        <LinearLayout
+            style="@style/Card" android:orientation="vertical"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginStart="12dp" android:layout_marginEnd="12dp"
+            android:layout_marginBottom="12dp">
+            <TextView style="@style/SectionTitle" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:text="@string/section_stats" />
+            <TextView
+                android:id="@+id/statsLine"
+                style="@style/Body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp" />
+            <Button
+                style="@style/Action"
+                android:id="@+id/resetStats"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/reset_stats" />
+        </LinearLayout>
+
+        <!-- ============ tools ============ -->
+        <LinearLayout
+            style="@style/Card" android:orientation="vertical"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginStart="12dp" android:layout_marginEnd="12dp"
+            android:layout_marginBottom="12dp">
+            <Switch
+                android:id="@+id/switchDebug"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/debug_logging"
+                android:textColor="@color/text" />
+            <Button
+                style="@style/Action"
+                android:id="@+id/openDebug"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/debug_open" />
+            <Button
+                style="@style/Action"
+                android:id="@+id/exportFromMain"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/export_log" />
+        </LinearLayout>
+
+        <!-- ============ about ============ -->
+        <LinearLayout
+            style="@style/Card" android:orientation="vertical"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginStart="12dp" android:layout_marginEnd="12dp"
+            android:layout_marginBottom="12dp">
+            <TextView style="@style/SectionTitle" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:text="@string/section_about" />
+            <TextView
+                android:id="@+id/aboutBody"
+                style="@style/Body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/about_body" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

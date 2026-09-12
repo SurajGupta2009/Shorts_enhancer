@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Notes on the flags, because they matter:
+
+  * packageNames is deliberately NOT set. Filtering to YouTube only would save a little
+    power but would also stop us noticing when you leave YouTube, which is how the block
+    screen knows to get out of the way. The service filters cheaply in code instead.
+
+  * flagReportViewIds is what makes resource IDs (reel_watch_fragment_root and friends)
+    visible. Without it, Shorts detection is guesswork.
+
+  * flagIncludeNotImportantViews is needed because the Shorts title/metadata nodes are
+    frequently marked "not important for accessibility".
+
+  * canPerformGestures lets the "auto-skip to the next Short" action swipe the feed.
+  * canRetrieveWindowContent is the whole point.
+-->
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accessibilityEventTypes="typeWindowStateChanged|typeWindowContentChanged|typeWindowsChanged"
+    android:accessibilityFeedbackType="feedbackGeneric"
+    android:accessibilityFlags="flagReportViewIds|flagIncludeNotImportantViews|flagRetrieveInteractiveWindows"
+    android:canPerformGestures="true"
+    android:canRetrieveWindowContent="true"
+    android:description="@string/service_description"
+    android:notificationTimeout="120"
+    android:settingsActivity="com.shortsense.MainActivity"
+    android:summary="@string/service_summary" />

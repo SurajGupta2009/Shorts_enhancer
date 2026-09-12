@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+      ShortsSense asks for exactly one permission: the accessibility service, which the
+      user grants in Settings and can revoke at any time. There is deliberately no
+      INTERNET permission, so nothing this app reads can leave the phone - not even in
+      principle. There is also no SYSTEM_ALERT_WINDOW: the block screen uses
+      TYPE_ACCESSIBILITY_OVERLAY, which an accessibility service may draw without it.
+    -->
+
+    <application
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!--
+          Read-only access to the exported log file, granted per share. exported="false"
+          means no other app can reach it on its own.
+        -->
+        <provider
+            android:name=".ExportProvider"
+            android:authorities="com.shortsense.exports"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            android:label="@string/export_provider_label" />
+
+        <activity
+            android:name=".DebugActivity"
+            android:exported="false"
+            android:label="@string/debug_title"
+            android:parentActivityName=".MainActivity" />
+
+        <service
+            android:name=".service.ShortsWatcherService"
+            android:exported="true"
+            android:label="@string/service_label"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+    </application>
+</manifest>

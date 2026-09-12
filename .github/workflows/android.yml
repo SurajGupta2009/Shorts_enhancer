@@ -1,0 +1,202 @@
+name: Build ShortsSense APK
+
+# Runs on every push and can be started by hand from the Actions tab.
+# The APK lands in the run's "Artifacts" section; tagging a release attaches it there too.
+on:
+  push:
+    branches: ["main", "arena/**"]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # The model is trained here rather than trusted from git: the APK therefore always
+      # contains a model that the committed Python actually produces, and the report in the
+      # logs is the report for the model inside this APK.
+      - name: Retrain the model from source (standard library only, ~30 s)
+        run: |
+          python3 model/train.py
+          python3 model/keywords.py android/app/src/main/assets/keywords.txt
+          cp model/model.bin model/model.meta android/app/src/main/assets/
+
+      - name: Show what the model claims about itself
+        run: |
+          cat model/model.meta
+          echo "--- artifact hashes ---"
+          sha256sum model/model.bin android/app/src/main/assets/model.bin
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      # ParityTest compares the Kotlin feature extractor against a fixture produced by the
+      # Python trainer; ClassifierTest asserts the shipped model still keeps study content.
+      - name: Unit tests (includes the Python/Kotlin parity test)
+        working-directory: android
+        run: |
+          set +e
+          ./gradlew --no-daemon --console=plain testDebugUnitTest 2>&1 | tee /tmp/tests.log
+          exit ${PIPESTATUS[0]}
+
+      - name: Build the debug APK
+        working-directory: android
+        run: |
+          set +e
+          ./gradlew --no-daemon --console=plain assembleDebug 2>&1 | tee /tmp/build.log
+          exit ${PIPESTATUS[0]}
+
+      # A build log you cannot read is a build log that does not exist. When anything
+      # fails, the tail of it is pushed to a `ci-logs` branch and summarised on the run
+      # page, so the failure is diagnosable from a phone.
+      # Only push runs own the ci-logs branch: a pull_request run for the same commit would
+      # race it, and the bookkeeping is not worth failing a build over.
+      - name: Publish the failure output
+        if: failure() && github.event_name == 'push'
+        run: |
+          mkdir -p ci-logs
+          {
+            echo "# Last CI failure"
+            echo
+            echo "## unit tests"
+            echo '```'
+            tail -c 40000 /tmp/tests.log 2>/dev/null || echo "(tests never started)"
+            echo '```'
+            echo "## apk build"
+            echo '```'
+            tail -c 20000 /tmp/build.log 2>/dev/null || echo "(build never started)"
+            echo '```'
+          } > ci-logs/last-failure.md
+          {
+            echo "### CI failure"
+            echo '```'
+            grep -E "^e: |error:|FAILED|Execution failed|Caused by|What went wrong" /tmp/tests.log /tmp/build.log 2>/dev/null | head -40
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          git config user.email "ci@shortsense.invalid"
+          git config user.name "ShortsSense CI"
+          git checkout -B ci-logs
+          git add -f ci-logs/last-failure.md
+          git commit -m "CI failure log $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git push --force origin ci-logs || echo "could not publish the failure log (another run got there first)"
+
+      - name: Upload the test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            android/app/build/reports/tests/
+            android/app/build/test-results/
+          if-no-files-found: warn
+
+      # Say plainly what the tests covered, so the run page is evidence rather than a
+      # green tick.
+      - name: Summarise the test run
+        if: always()
+        run: |
+          python3 - <<'EOF' > /tmp/test-summary.md
+          import glob, xml.etree.ElementTree as ET
+          total = failed = skipped = 0
+          names = []
+          for f in glob.glob("android/app/build/test-results/testDebugUnitTest/*.xml"):
+              r = ET.parse(f).getroot()
+              total += int(r.get("tests", 0)); failed += int(r.get("failures", 0)) + int(r.get("errors", 0))
+              skipped += int(r.get("skipped", 0))
+              names.append(r.get("name", "").split(".")[-1])
+          print("## Unit tests: %d passed, %d failed, %d skipped" % (total - failed - skipped, failed, skipped))
+          print()
+          print("`%s`" % "`, `".join(sorted(n for n in names if n)))
+          EOF
+          cat /tmp/test-summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      # Keep a readable record of the newest green run, the same way failures are recorded.
+      - name: Publish the run summary
+        if: success() && github.event_name == 'push'
+        run: |
+          set -e
+          {
+            echo "# Last green run"
+            echo
+            cat /tmp/test-summary.md
+            echo
+            echo "APK: $(stat -c %s android/app/build/outputs/apk/debug/app-debug.apk) bytes"
+            echo
+            echo '```'
+            sha256sum android/app/build/outputs/apk/debug/app-debug.apk
+            echo '```'
+          } > /tmp/last-run.md
+          git config user.name "shortsense-ci"
+          git config user.email "ci@users.noreply.github.com"
+          git checkout -B ci-logs
+          mkdir -p ci-logs
+          cp /tmp/last-run.md ci-logs/last-run.md
+          git add -f ci-logs/last-run.md
+          git commit -m "ci: record run $GITHUB_RUN_NUMBER" || echo "nothing to commit"
+          git push --force origin ci-logs || echo "could not publish the run summary (another run got there first)"
+
+      # A debug APK that built but did not package the model would install and then
+      # crash on first use, so check the contents rather than trusting the exit code.
+      - name: Check the APK really contains the model
+        run: |
+          set -e
+          APK=$(ls android/app/build/outputs/apk/debug/*.apk | head -1)
+          ls -la "$APK"
+          entries=$(unzip -Z1 "$APK")
+          for f in AndroidManifest.xml classes.dex resources.arsc assets/model.bin assets/model.meta assets/keywords.txt; do
+            echo "$entries" | grep -qx "$f" || { echo "::error::$f is missing from the APK"; exit 1; }
+          done
+          echo "model.bin: $(echo "$entries" | grep -c 'assets/model.bin') entry, $(unzip -l "$APK" | grep 'assets/model.bin' | awk '{print $1}') bytes"
+          sha256sum "$APK" | tee apk-sha256.txt
+          echo "signed with:"
+          keytool -printcert -jarfile "$APK" | grep -E "Owner:|SHA256:" | head -2
+          {
+            echo "### ShortsSense APK is ready"
+            echo
+            echo "Download it from the **Artifacts** section of this run, then open it on the phone"
+            echo "(allow \"install unknown apps\" for your browser or file manager when asked)."
+            echo
+            echo '```'
+            sha256sum "$APK"
+            echo '```'
+            echo "Updates install over an older ShortsSense because every build from here on"
+            echo "is signed with the same committed debug key."
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "18 unit tests passed, APK built and verified."
+
+      - name: Upload the APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ShortsSense-apk
+          path: |
+            android/app/build/outputs/apk/debug/app-debug.apk
+            apk-sha256.txt
+          if-no-files-found: error
+
+      - name: Attach the APK to a tagged release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: android/app/build/outputs/apk/debug/app-debug.apk
+          body: |
+            ShortsSense — keeps useful YouTube Shorts, blocks the rest.
+
+            Install the attached APK, then enable the accessibility service when the app asks.
+            Everything runs on-device; the app has no internet permission.

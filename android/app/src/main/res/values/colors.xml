@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#FF152238</color>
+    <color name="primary_dark">#FF0D1526</color>
+    <color name="bg">#FFF3F5F9</color>
+    <color name="card">#FFFFFFFF</color>
+    <color name="card_stroke">#FFE4E8F0</color>
+    <color name="text">#FF141A26</color>
+    <color name="muted">#FF6B7285</color>
+
+    <!-- accent: used for buttons, the seek bar's filled portion and the icon -->
+    <color name="accent">#FF0E8A6B</color>
+    <!-- accent_deep: the same hue darkened for small text on white (contrast > 4.5:1) -->
+    <color name="accent_deep">#FF0A6B53</color>
+    <!-- accent_bright: for dark backgrounds (the header, the block screen) -->
+    <color name="accent_bright">#FF2EE6A9</color>
+    <color name="danger">#FFB3261E</color>
+    <color name="danger_bright">#FFFF7A72</color>
+
+    <color name="header_start">#FF17243D</color>
+    <color name="header_end">#FF0C1526</color>
+    <color name="pill">#1FFFFFFF</color>
+    <color name="overlay_scrim">#F2000000</color>
+</resources>
