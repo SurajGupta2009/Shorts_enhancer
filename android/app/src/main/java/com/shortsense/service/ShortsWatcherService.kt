@@ -211,7 +211,10 @@ class ShortsWatcherService : AccessibilityService() {
             "p=${"%.2f".format(verdict.confidence)}"
 
         if (verdict.keep) {
-            dismissOverlay()
+            // A screen the app could not read must not tear down a block screen that is
+            // standing: the same Short would be blocked again a moment later, which looks
+            // like flicker. Only a Short that was read and judged keepable clears it.
+            if (!verdict.unknown || overlay?.isShowing() != true) dismissOverlay()
             if (!verdict.unknown) settings.countAllowed()
             if (settings.debugLogging) {
                 DebugLog.add(if (verdict.unknown) "unknown" else "keep", "$where :: ${verdict.reason}")

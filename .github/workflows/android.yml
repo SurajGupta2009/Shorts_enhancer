@@ -66,8 +66,10 @@ jobs:
       # A build log you cannot read is a build log that does not exist. When anything
       # fails, the tail of it is pushed to a `ci-logs` branch and summarised on the run
       # page, so the failure is diagnosable from a phone.
+      # Only push runs own the ci-logs branch: a pull_request run for the same commit would
+      # race it, and the bookkeeping is not worth failing a build over.
       - name: Publish the failure output
-        if: failure()
+        if: failure() && github.event_name == 'push'
         run: |
           mkdir -p ci-logs
           {
@@ -93,7 +95,7 @@ jobs:
           git checkout -B ci-logs
           git add -f ci-logs/last-failure.md
           git commit -m "CI failure log $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          git push --force origin ci-logs || echo "could not push ci-logs (branch protection?)"
+          git push --force origin ci-logs || echo "could not publish the failure log (another run got there first)"
 
       - name: Upload the test report
         if: always()
@@ -127,7 +129,7 @@ jobs:
 
       # Keep a readable record of the newest green run, the same way failures are recorded.
       - name: Publish the run summary
-        if: success()
+        if: success() && github.event_name == 'push'
         run: |
           set -e
           {
@@ -148,7 +150,7 @@ jobs:
           cp /tmp/last-run.md ci-logs/last-run.md
           git add -f ci-logs/last-run.md
           git commit -m "ci: record run $GITHUB_RUN_NUMBER" || echo "nothing to commit"
-          git push --force origin ci-logs
+          git push --force origin ci-logs || echo "could not publish the run summary (another run got there first)"
 
       # A debug APK that built but did not package the model would install and then
       # crash on first use, so check the contents rather than trusting the exit code.
