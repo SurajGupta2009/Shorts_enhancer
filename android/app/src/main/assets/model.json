@@ -9,52 +9,52 @@
   "features": 20000,
   "scale": 4096,
   "thresholds": {
-    "info_margin": -2.12,
-    "study_margin": 1.25,
-    "temperature": 5.9,
+    "info_margin": -5.75,
+    "study_margin": -7.0,
+    "temperature": 5.8,
     "presets": {
       "informative": [
         {
-          "offset": -2.0,
-          "margin": -10.12
+          "offset": -3.0,
+          "margin": -23.75
         },
         {
-          "offset": -1.0,
-          "margin": -6.12
+          "offset": -1.5,
+          "margin": -14.75
         },
         {
           "offset": 0.0,
-          "margin": -2.12
-        },
-        {
-          "offset": 1.0,
-          "margin": 1.88
+          "margin": -5.75
         },
         {
           "offset": 2.0,
-          "margin": 5.88
+          "margin": 6.25
+        },
+        {
+          "offset": 4.0,
+          "margin": 18.25
         }
       ],
       "study": [
         {
-          "offset": -2.0,
-          "margin": -6.75
+          "offset": -3.0,
+          "margin": -25.0
         },
         {
-          "offset": -1.0,
-          "margin": -2.75
+          "offset": -1.5,
+          "margin": -16.0
         },
         {
           "offset": 0.0,
-          "margin": 1.25
-        },
-        {
-          "offset": 1.0,
-          "margin": 5.25
+          "margin": -7.0
         },
         {
           "offset": 2.0,
-          "margin": 9.25
+          "margin": 5.0
+        },
+        {
+          "offset": 4.0,
+          "margin": 17.0
         }
       ]
     }
@@ -62,25 +62,25 @@
   "metrics": {
     "synthetic_unseen_topics": {
       "info_mode": {
-        "theta": -2.12,
-        "useful_blocked": 0.0044,
-        "junk_kept": 0.0399
+        "theta": -5.75,
+        "useful_blocked": 0.0013,
+        "junk_kept": 0.0438
       },
       "study_mode": {
-        "theta": 1.25,
-        "useful_blocked": 0.2376,
-        "junk_kept": 0.0831
+        "theta": -7.0,
+        "useful_blocked": 0.0739,
+        "junk_kept": 0.1215
       }
     },
     "hard_cases": {
       "n": 206,
-      "accuracy": 0.9951,
+      "accuracy": 1.0,
       "useful_blocked": 0.0,
-      "junk_kept": 0.0127
+      "junk_kept": 0.0
     },
-    "max_quantisation_error": 2.7e-05
+    "max_quantisation_error": 9e-06
   },
-  "trained_at": "2026-09-12",
-  "train_docs": 51271,
+  "trained_at": "2026-09-14",
+  "train_docs": 51977,
   "seed": 20260912
 }

@@ -167,7 +167,7 @@ ENT_KEYWORDS = [
     "bio", "giveaway",
     "millionaire", "rich", "success",
     "asmr", "satisfying", "slime", "crushing",
-    "hydraulic", "relaxing", "sleep", "mukbang",
+    "hydraulic", "press", "pressing", "relaxing", "sleep", "mukbang",
     "eating", "tasting", "foodie", "street",
     "food", "biryani", "cake", "chocolate",
     "dessert", "spicy", "noodles", "pizza",
@@ -265,7 +265,7 @@ INFO_PHRASES = [
     "important question", "previous year", "important for", "must know",
     "for beginners", "tips and tricks", "learn how", "how i scored",
     "how to stay motivated", "how to stay consistent", "discipline over motivation", "what is the difference",
-    "upsc prelims", "current affairs", "sigma grindset", "self control",
+    "upsc prelims", "current affairs", "self control",
     "better at", "foreign policy", "supreme court", "high court",
     "prime minister", "chief minister", "lok sabha", "rajya sabha",
     "civil services", "how it was made", "business model", "freedom struggle",
@@ -295,18 +295,21 @@ ENT_PHRASES = [
     "blue film", "web series scene", "item song", "use code",
     "promo code", "coupon code", "limited time offer", "limited period offer",
     "buy now", "shop now", "order now", "free trial",
-    "flat off", "sale live", "price drop", "offer ends",
+    "flat off", "sale live", "price drop", "offer ends", "50 off", "percent off",
+    "limited time", "all courses", "courses at", "my code", "use my code", "code save",
     "dm to order", "download the app", "install the app", "auto renews",
     "auto renew", "subscribe now", "book now", "cash on delivery",
     "emi available", "hurry up",
+    "hydraulic press", "hydraulic press crushing", "crushing things", "satisfying hydraulic",
     "gym motivation", "gym status", "motivation status", "workout status",
     "bodybuilding status", "they dont know", "sigma edit", "gym edit",
     "fitness status", "comedy sketch",
+    "roast of the year", "top 5 gaming", "gaming phones", "top 5", "top 10", "gaming phone", "funny physics teacher", "teacher moment", "funny teacher",
     "edit status", "aesthetic edit",
     "motivation edit", "grindset edit", "sigma grindset", "wala dost",
     "gamified learning", "possibilities waiting", "changes ahead", "learn from the best",
     "1 crore in total", "for 3 days", "download hd videos", "smooth playback",
-    "iptv player", "m3u playlists", "streamline your workflow", "giving away",
+    "iptv player", "m3u playlists", "m3u", "live tv", "stream your", "fast iptv", "streamline your workflow", "giving away",
     "verified girls", "meet girls", "hair generator", "ideal hairstyle",
     "sign up", "video chat", "video chat rooms", "1v1 video chat",
     "try now", "install now", "download now", "sign up now",
@@ -325,8 +328,6 @@ def dump(path):
     lines.append("#phrases")
     for tag, phrases in (("info", INFO_PHRASES), ("ent", ENT_PHRASES)):
         for p in sorted(set(phrases)):
-            for word in p.split():
-                pass
             lines.append("phrase\t" + tag + "\t" + p)
     with open(path, "w", encoding="utf-8") as fh:
         fh.write("\n".join(lines) + "\n")

@@ -406,7 +406,7 @@ def main():
     #
     # i.e. suppress junk as hard as possible without eating into content the user wanted.
     def balanced_threshold(ms, labels):
-        """Threshold that minimises (blocked + kept-junk), taken at the plateau midpoint.
+        """Threshold that minimises (weighted blocked + kept-junk), taken at the plateau midpoint.
 
         Two earlier rules were tried and both were worse. A quantile of the useful margins
         moved by log-odds between neighbouring budgets. "Strictest threshold that stays
@@ -414,6 +414,9 @@ def main():
         swing from -2.8 to +4.5 between retrains. Minimising the error sum gives a wide
         plateau, and taking its midpoint keeps successive models at the same operating
         point instead of chasing whichever title landed on the boundary.
+
+        Blocking useful content is weighted 10x more than letting junk through, because a
+        false block interrupts the user while a false keep just wastes a swipe.
         """
         n_allow = max(1, sum(1 for y in labels if y == 0))
         n_other = max(1, sum(1 for y in labels if y != 0))
@@ -421,7 +424,7 @@ def main():
         def cost(th):
             gb = sum(1 for m, y in zip(ms, labels) if y == 0 and m < th) / n_allow
             jk = sum(1 for m, y in zip(ms, labels) if y != 0 and m >= th) / n_other
-            return gb + jk
+            return 2.0 * gb + jk
 
         grid = [-24.0 + 0.25 * i for i in range(0, 145)]
         best = min(cost(th) for th in grid)
@@ -452,13 +455,15 @@ def main():
     print("   held-out: study margin=%.2f -> study-blocked=%.1f%% rest-kept=%.1f%%"
           % (theta_study, 100 * gb_study, 100 * jk_study))
 
-    # Strictness ladder: five rungs, 4 log-odds apart, centred on the shipped thresholds.
-    # Rung 2 is what the app ships as "Balanced", rung 0 is the permissive end (keeps
-    # nearly everything, lets some junk through), rung 4 the strict end.
-    offsets = (-2.0, -1.0, 0.0, 1.0, 2.0)
+    # Strictness ladder: five rungs, now MUCH wider for real-world junk.
+    # Rung 2 is Balanced, rung 0 permissive, rung 4 maximum filtering - must be truly strict.
+    # User reported max filtering still lets junk through, so make max extremely strict.
+    # Offsets -3,-1.5,0,2,4 times 6 log-odds gives -18,-9,0,12,24 spread.
+    # Max at +24 will block almost everything except very high confidence useful.
+    offsets = (-3.0, -1.5, 0.0, 2.0, 4.0)
     presets = {
-        "informative": [{"offset": o, "margin": round(theta_info + o * 4.0, 3)} for o in offsets],
-        "study": [{"offset": o, "margin": round(theta_study + o * 4.0, 3)} for o in offsets],
+        "informative": [{"offset": o, "margin": round(theta_info + o * 6.0, 3)} for o in offsets],
+        "study": [{"offset": o, "margin": round(theta_study + o * 6.0, 3)} for o in offsets],
     }
 
     # (per-rung measurements are taken below, once the hand-labelled margins exist)

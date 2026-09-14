@@ -126,8 +126,6 @@ JUNK_CHANNELS = {
         "Prank King", "Social Experiment Fun", "Street Food Frenzy",
         # channels from the device log the app was tested against
         "Jettism", "Neera",
-        # channels from the device log the app was tested against
-        "Jettism", "Neera",
         "Mukbang India", "Foodie Vlogger", "5 Minute Crafts", "Crafty Ideas",
         "Satisfying Slime ASMR", "Oddly Satisfying", "ASMR Relaxing Sounds",
         "Fashion Lookbook", "Beauty Glow Tips", "Makeup Transformation",
@@ -143,6 +141,9 @@ JUNK_CHANNELS = {
         "Reels Compilation", "Trending Now India", "Viral Video Daily",
     ],
 }
+
+# Deduplicate while preserving order (fixes accidental duplicate entries like Jettism)
+JUNK_CHANNELS = {k: list(dict.fromkeys(v)) for k, v in JUNK_CHANNELS.items()}
 
 ALL_CHANNEL_SUFFIXES = [
     "", "", "", "", "", " Hindi", " English", " Official", " Clips", " Shorts",
@@ -622,9 +623,11 @@ JUNK_GROUPS = [
         "{topic} profit proof",
     ]),
     ("reaction", [
-        "reaction video", "first time watching", "roast video", "comment reply",
-        "youtuber drama", "exposed video", "beef between creators",
+        "reaction video", "first time watching", "roast video", "roast of the year", "roast battle",
+        "comment reply", "youtuber drama", "exposed video", "beef between creators",
         "tiktok compilation", "instagram reels compilation", "trending compilation",
+        "top 5 gaming phones", "top 10 gaming phones", "gaming phones under 30000", "best gaming phones",
+        "gaming phone review", "gaming setup tour", "gaming phone unboxing",
     ], [
         "{topic} 😂",
         "{topic} — my reaction",
@@ -981,8 +984,10 @@ JUNK_GROUPS += [
     ("meme_bait", [
         "class 10 board exam meme", "homework meme", "maths exam meme",
         "teacher checking answer sheet", "physics teacher reaction",
+        "funny physics teacher moment", "funny teacher moment", "teacher funny moment",
         "when the teacher asks for homework", "student life meme",
         "attendance shortage meme", "viva exam meme", "result day reaction",
+        "funny chemistry teacher", "funny maths teacher", "teacher comedy moment",
     ], [
         "{topic} 😂",
         "{topic} 😭😭",
@@ -1011,34 +1016,6 @@ JUNK_GROUPS += [
     ], []),
 ]
 
-# Adverts. A Short that is selling something is not worth watching, and the copy is
-# formulaic enough to learn: price, percentage off, a code, a renewal date.
-AD_TOPICS = [
-    "Amazon Music Unlimited", "a coding bootcamp", "a fitness app subscription",
-    "a gaming headset", "a credit card", "a trading app", "an online course",
-    "a protein powder", "a smartwatch", "a used car loan", "a mutual fund SIP",
-    "a cloud hosting plan", "an English speaking course", "a NEET test series",
-    "a laptop", "a D2C skincare range",
-]
-AD_TEMPLATES = [
-    "{topic} - 3 months free. Auto-renews at 119 per month",
-    "{topic}: limited time offer, use code SAVE50",
-    "get {topic} at 50% off today only",
-    "download the app and get cashback on {topic}",
-    "{topic} free trial for 30 days, cancel anytime",
-    "offer ends tonight: {topic} at a flat discount",
-    "sponsored: {topic} - buy now",
-    "{topic} price drop, order now",
-    "use my code to get {topic} cheaper",
-    "new {topic} launch - book now",
-]
-AD_CHANNELS = [
-    "Deals India Daily", "Offer Zone", "Shop Smart", "Ad Clips Official",
-    "Sale Alert India", "Promo Bazaar", "Brand Deals TV", "Discount Dekho",
-]
-
-# Adult / racy clickbait. The user asked for this to be blocked outright; title words are
-# the only signal available, and these are reliable ones.
 # Adverts. A Short that is selling something is not worth watching, and the copy is
 # formulaic enough to learn: price, percentage off, a code, a renewal date.
 AD_TOPICS = [
@@ -1109,11 +1086,13 @@ EXTRA_SKILL_TOPICS = [
 EXTRA_INFO_TOPICS = [
     "the economics of a movie ticket", "how sports analytics works",
     "the science of a football free kick", "cricket biomechanics",
+    "cricket bowling action analysis", "biomechanics of bowling", "bowling action biomechanics",
     "why muscle growth happens", "protein and recovery science",
-    "how a phone review is actually done", "what benchmark scores mean",
+    "how a phone review is actually done", "what benchmark scores mean", "how phone reviews work",
     "government schemes explained", "how to read a government notification",
     "the biology of sleep", "why typing speed matters at work",
     "how keyboards are manufactured", "the physics of a bicycle",
+    "how credit scores are calculated", "credit score calculation", "how credit scores work",
 ]
 
 
@@ -1369,12 +1348,59 @@ def build(rng, n_target=26000, holdout=False, include_devanagari=True):
         title = _decorate(rng, _typo(rng, rng.choice(CREATOR_TEMPLATES).format(topic=topic)), "info")
         add("info", title, _mutate_channel(rng, rng.choice(INFORMATIVE_CHANNELS["explainer"])), "creator_economy")
 
-    # ---- adverts
+    # ---- adverts (from deal channels)
     for _ in range(n_target // 45 if not holdout else n_target // 220):
         topic = rng.choice(AD_TOPICS)
         title = _decorate(rng, _typo(rng, rng.choice(AD_TEMPLATES).format(topic=topic)), "ent")
         channel = _mutate_channel(rng, rng.choice(AD_CHANNELS))
         add("ent", title, channel, "advert")
+    # ---- adverts from educational channels (the hard case: "50% off courses, use code")
+    AD_EDU_TEMPLATES = [
+        "Limited time offer: 50% off on all courses, use code {code}",
+        "{topic} - 50% off, use code {code} today only",
+        "Get {topic} at 50% off, use code {code}",
+        "Flat 50% off on {topic}, code {code}",
+        "Offer ends tonight: {topic} at 50% off, use code {code}",
+        "Special discount on {topic}, use code {code}",
+        "{topic} sale live: 50% off with code {code}",
+        "Buy {topic} now at half price, code {code}",
+        "Courses at 50% off, use code {code} - limited time",
+        "All courses 50% off, promo code {code}",
+    ]
+    AD_CODES = ["STUDY50", "LEARN50", "SAVE50", "JEE50", "NEET50", "CODE50", "OFF50", "DISCOUNT50"]
+    AD_EDU_TOPICS = ["all courses", "our courses", "JEE courses", "NEET courses", "coding courses", "test series", "course bundle", "premium courses"]
+    for _ in range(n_target // 90 if not holdout else n_target // 400):
+        topic = rng.choice(AD_EDU_TOPICS)
+        code = rng.choice(AD_CODES)
+        tpl = rng.choice(AD_EDU_TEMPLATES)
+        title = tpl.format(topic=topic, code=code)
+        title = _decorate(rng, _typo(rng, title), "ent")
+        # channel looks educational but title is an ad
+        channel = _mutate_channel(rng, rng.choice(INFORMATIVE_CHANNELS["study"] + INFORMATIVE_CHANNELS["info"]))
+
+        add("ent", title, channel, "advert_edu")
+    # ---- IPTV / M3U player ads (real device log failure)
+    IPTV_TOPICS = [
+        "M3U playlists & live TV", "IPTV player for live TV", "live TV and movies",
+        "M3U playlist streaming", "IPTV streaming app", "live TV channels",
+        "M3U and Xtream codes", "IPTV player with EPG",
+    ]
+    IPTV_TEMPLATES = [
+        "Stream your {topic} easily with a fast IPTV player",
+        "{topic} — fast IPTV player",
+        "Watch {topic} with our IPTV player",
+        "{topic} streaming made easy",
+        "Download HD videos with smooth playback and {topic}",
+        "Best app for {topic}",
+        "{topic} — download now",
+        "Stream {topic} in HD",
+    ]
+    for _ in range(n_target // 120 if not holdout else n_target // 500):
+        topic = rng.choice(IPTV_TOPICS)
+        title = rng.choice(IPTV_TEMPLATES).format(topic=topic)
+        title = _decorate(rng, _typo(rng, title), "ent")
+        channel = _mutate_channel(rng, rng.choice(["IPTV Player Pro", "M3U Streamer", "Live TV Hub", "Streamer App"]))
+        add("ent", title, channel, "iptv_ad")
 
     # ---- exam and recruitment news
     # Students actively want these ("last date", "answer key", "cut off"): they are

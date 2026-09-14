@@ -48,7 +48,8 @@ def explain(qw, index, fkeys, study_only, limit=5):
 def decide(qw, qb, index, meta, title, channel, mode):
     fkeys = feat.features(title, channel)
     probs = T.predict_q(qw, qb, index, fkeys)
-    mm = T.margin(probs, "info" if mode == "informative" else "study")
+    logits = T.logits_of(qw, qb, index, fkeys)
+    mm = T.margin(logits, "info" if mode == "informative" else "study")
     theta = meta["thresholds"]["info_margin" if mode == "informative" else "study_margin"]
     keep = mm >= theta
     print("title   : %s" % (title or "(nothing read)"))
